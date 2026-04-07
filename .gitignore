@@ -1,0 +1,8 @@
+# Cloned reference repositories
+repos/
+
+# macOS
+.DS_Store
+
+# Claude Code local settings
+.claude/settings.local.json
