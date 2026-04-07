@@ -117,25 +117,268 @@ the standards themselves need revision).
 - Design Gate → new pattern needed → update Design System (durable)
 - Both escalations require human approval on the durable artifact update.
 
-## Constraint Flow
+## Process Diagram
 
+Full process model in DOT notation. Render with Graphviz or viz.js.
+
+```dot
+digraph full_model {
+  rankdir=TB
+  bgcolor="transparent"
+  fontname="Helvetica"
+  node [fontname="Helvetica" fontsize=10]
+  edge [fontname="Helvetica" fontsize=8]
+  compound=true
+  newrank=true
+  ranksep=0.6
+  nodesep=0.5
+
+  // ══════════════════════════════════════
+  // HUMAN — CPTO Observer
+  // ══════════════════════════════════════
+  subgraph cluster_human {
+    label="HUMAN — CPTO Observer"
+    style="rounded,bold"
+    color="#fca5a5"
+    fontcolor="#fca5a5"
+    fontsize=12
+    penwidth=2
+
+    cpto [
+      label="CPTO\nasks questions · challenges · approves\ndoes not produce or decide"
+      shape=doubleoctagon style="filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+  }
+
+  // ══════════════════════════════════════
+  // DURABLE LAYER
+  // ══════════════════════════════════════
+  subgraph cluster_durable {
+    label="DURABLE — agent-proposed, HUMAN APPROVED"
+    style="rounded,bold"
+    color="#fca5a5"
+    fontcolor="#fca5a5"
+    fontsize=12
+    penwidth=2
+
+    product [
+      label="Product\n[Product Owner]\nHUMAN APPROVAL"
+      shape=box style="rounded,filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+    arch [
+      label="Architecture\n[Architect]\nHUMAN APPROVAL"
+      shape=box style="rounded,filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+    design_sys [
+      label="Design System\n[Designer]\nHUMAN APPROVAL"
+      shape=box style="rounded,filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+  }
+
+  // ══════════════════════════════════════
+  // OUTER CYCLE
+  // ══════════════════════════════════════
+  subgraph cluster_outer {
+    label="OUTER CYCLE — Product Increment"
+    style="rounded,bold"
+    color="#22d3ee"
+    fontcolor="#22d3ee"
+    fontsize=12
+    penwidth=2
+
+    pick [
+      label="Pick Feature\n[Product Owner]"
+      shape=box style="rounded,filled"
+      fillcolor="#164e63" color="#22d3ee" fontcolor="#e2e8f0"
+    ]
+    shape_scope [
+      label="Shape & Scope\n[Product Owner]"
+      shape=box style="rounded,filled"
+      fillcolor="#164e63" color="#22d3ee" fontcolor="#e2e8f0"
+    ]
+    gate_product [
+      label="PRODUCT GATE\n[QA/Reviewer]\nHUMAN APPROVAL"
+      shape=octagon style="filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=3
+    ]
+
+    // ══════════════════════════════════
+    // INNER CYCLE — fully automated
+    // ══════════════════════════════════
+    subgraph cluster_inner {
+      label="INNER CYCLE — Fully Automated"
+      style="rounded,bold"
+      color="#6ee7b7"
+      fontcolor="#6ee7b7"
+      fontsize=11
+      penwidth=2
+
+      brainstorm [
+        label="Brainstorm\n[Architect]"
+        shape=box style="rounded,filled"
+        fillcolor="#064e3b" color="#6ee7b7" fontcolor="#e2e8f0"
+      ]
+      plan [
+        label="Plan\n[Developer]"
+        shape=box style="rounded,filled"
+        fillcolor="#064e3b" color="#6ee7b7" fontcolor="#e2e8f0"
+      ]
+      gate_arch [
+        label="ARCH GATE\n[Architect]\nauto"
+        shape=octagon style="filled"
+        fillcolor="#2d1b69" color="#a78bfa" fontcolor="#e2e8f0"
+        penwidth=2
+      ]
+      implement [
+        label="Implement\n[Developer]"
+        shape=box style="rounded,filled"
+        fillcolor="#064e3b" color="#6ee7b7" fontcolor="#e2e8f0"
+      ]
+      gate_design [
+        label="DESIGN GATE\n[Designer]\nauto"
+        shape=octagon style="filled"
+        fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0"
+        penwidth=2
+      ]
+      code_review [
+        label="Code Review\n[QA/Reviewer]\nauto"
+        shape=box style="rounded,filled"
+        fillcolor="#064e3b" color="#6ee7b7" fontcolor="#e2e8f0"
+      ]
+
+      brainstorm -> plan [color="#6ee7b7" penwidth=2]
+      plan -> gate_arch [color="#6ee7b7" penwidth=2]
+      gate_arch -> implement [color="#a78bfa" penwidth=2 label="pass"]
+      implement -> gate_design [color="#6ee7b7" penwidth=2]
+      gate_design -> code_review [color="#f472b6" penwidth=2 label="pass"]
+      code_review -> brainstorm [color="#6ee7b7" penwidth=1 style=dashed label="rework"]
+    }
+
+    gate_qa [
+      label="QA GATE\n[QA/Reviewer]\nauto"
+      shape=octagon style="filled"
+      fillcolor="#164e63" color="#fbbf24" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+    verify [
+      label="Verify CI\n[Developer]\nauto"
+      shape=box style="rounded,filled"
+      fillcolor="#164e63" color="#22d3ee" fontcolor="#e2e8f0"
+    ]
+    merge [
+      label="Merge PR\n[Developer]\nHUMAN APPROVAL"
+      shape=box style="filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=3
+    ]
+    demo [
+      label="Demo & Announce\n[Product Owner]\nHUMAN APPROVAL"
+      shape=box style="filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=3
+    ]
+
+    pick -> shape_scope [color="#22d3ee" penwidth=2]
+    shape_scope -> gate_product [color="#22d3ee" penwidth=2]
+    gate_product -> brainstorm [color="#60a5fa" penwidth=2 label="pass" lhead=cluster_inner]
+    code_review -> gate_qa [color="#22d3ee" penwidth=2 label="approved" ltail=cluster_inner]
+    gate_qa -> verify [color="#fbbf24" penwidth=2 label="pass"]
+    verify -> merge [color="#22d3ee" penwidth=2]
+    merge -> demo [color="#22d3ee" penwidth=2]
+    demo -> pick [color="#22d3ee" penwidth=2 style=dashed label="next feature"]
+  }
+
+  // ── HUMAN APPROVAL HOOKS ──
+  cpto -> product [color="#fca5a5" penwidth=2 style=bold label="approve"]
+  cpto -> arch [color="#fca5a5" penwidth=2 style=bold label="approve"]
+  cpto -> design_sys [color="#fca5a5" penwidth=2 style=bold label="approve"]
+  cpto -> gate_product [color="#fca5a5" penwidth=2 style=bold label="approve\nscope"]
+  cpto -> merge [color="#fca5a5" penwidth=2 style=bold label="approve\nmerge"]
+  cpto -> demo [color="#fca5a5" penwidth=2 style=bold label="approve\nannouncement"]
+
+  // ── GATE REJECTIONS ──
+  gate_product -> shape_scope [color="#ef4444" penwidth=1.5 style=dashed label="re-shape"]
+  gate_arch -> brainstorm [color="#ef4444" penwidth=1.5 style=dashed label="re-think"]
+  gate_design -> implement [color="#ef4444" penwidth=1.5 style=dashed label="fix"]
+  gate_qa -> code_review [color="#ef4444" penwidth=1.5 style=dashed label="fix issues"]
+
+  // ── ESCALATION ──
+  gate_arch -> arch [color="#a78bfa" penwidth=1.5 style=dashed label="new ADR"]
+  gate_design -> design_sys [color="#f472b6" penwidth=1.5 style=dashed label="new pattern"]
+
+  // ── DURABLE FEEDS ──
+  product -> pick [color="#60a5fa" penwidth=2 label="backlog"]
+  product -> gate_product [color="#60a5fa" penwidth=1.5 style=dotted label="criteria"]
+  arch -> gate_arch [color="#a78bfa" penwidth=1.5 style=dotted label="constraints"]
+  design_sys -> gate_design [color="#f472b6" penwidth=1.5 style=dotted label="standards"]
+
+  // ══════════════════════════════════════
+  // CONTINUOUS
+  // ══════════════════════════════════════
+  subgraph cluster_continuous {
+    label="CONTINUOUS — cadence-based, automated"
+    style="rounded,dashed"
+    color="#f59e0b"
+    fontcolor="#f59e0b"
+    fontsize=12
+
+    knowledge [
+      label="Knowledge\n[Designer]"
+      shape=box style="rounded,filled"
+      fillcolor="#78350f" color="#f59e0b" fontcolor="#e2e8f0"
+    ]
+    ops [
+      label="Operations\n[Developer]"
+      shape=box style="rounded,filled"
+      fillcolor="#78350f" color="#f59e0b" fontcolor="#e2e8f0"
+    ]
+    tech_backlog [
+      label="Tech Backlog\n[Architect]"
+      shape=box style="rounded,filled"
+      fillcolor="#78350f" color="#f59e0b" fontcolor="#e2e8f0"
+    ]
+    knowledge -> ops [color="#f59e0b" dir=both penwidth=1.5]
+    ops -> tech_backlog [color="#f59e0b" penwidth=1.5 label="flags debt"]
+  }
+
+  demo -> knowledge [color="#f59e0b" penwidth=1.5 style=dashed label="evidence"]
+  knowledge -> product [color="#f59e0b" penwidth=1.5 style=dashed label="update"]
+  tech_backlog -> pick [color="#f59e0b" penwidth=1.5 style=dashed label="tech items"]
+}
 ```
-DURABLE (human-approved foundation)
-  Product ──────┐
-  Architecture ─┼──► constraints flow down to every cycle
-  Design System ┘
-        │
-  OUTER CYCLE (product increment)
-    Pick → Shape → Product Gate [HUMAN] → Inner Cycle
-    Inner Cycle → QA Gate → Verify → Merge [HUMAN] → Demo [HUMAN]
-        │
-        │  feedback (findings, outcomes)
-        ▼
-  CONTINUOUS (cadence-based, automated)
-    Knowledge ◄──► Operations → Tech Backlog
-        │
-        └──► update durable layer (with human approval)
-```
+
+## Role × Activity Matrix
+
+| Activity | Layer | Agent Role | Gate Type |
+|----------|-------|------------|-----------|
+| Maintain product brief, backlog, priorities | Durable | Product Owner | Human approval |
+| Maintain architecture (ADRs, APIs, components) | Durable | Architect | Human approval |
+| Maintain design system (standards, patterns) | Durable | Designer | Human approval |
+| Pick Feature from backlog | Outer | Product Owner | Auto |
+| Shape & Scope | Outer | Product Owner | Auto |
+| Product Gate | Outer | QA / Reviewer | Human approval |
+| QA Gate (regression, scenarios) | Outer | QA / Reviewer | Auto |
+| Verify (CI, integration) | Outer | Developer | Auto |
+| Merge PR | Outer | Developer | Human approval |
+| Demo & Announce | Outer | Product Owner | Human approval |
+| Brainstorm implementation | Inner | Architect | Auto |
+| Plan work breakdown | Inner | Developer | Auto |
+| Architecture Gate | Inner | Architect | Auto |
+| Implement task by task | Inner | Developer | Auto |
+| Design Gate | Inner | Designer | Auto |
+| Code Review | Inner | QA / Reviewer | Auto |
+| Collect knowledge and learnings | Continuous | Designer | Auto |
+| Monitor operations and metrics | Continuous | Developer | Auto |
+| Maintain technical backlog | Continuous | Architect | Auto |
 
 ## Open Questions
 
