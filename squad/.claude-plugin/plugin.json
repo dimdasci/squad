@@ -1,0 +1,26 @@
+{
+  "name": "squad",
+  "version": "0.1.0",
+  "description": "Product development framework for small teams. Extends Superpowers execution loop with product management, architecture, design, and quality gates.",
+  "author": {
+    "name": "Dmitrii Kharitonov",
+    "url": "https://github.com/dimdasci"
+  },
+  "repository": "https://github.com/dimdasci/squad",
+  "license": "MIT",
+  "keywords": [
+    "product-management",
+    "architecture",
+    "design-system",
+    "quality-gates",
+    "small-teams"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "userConfig": {
+    "product_home": {
+      "description": "Absolute path to shared product artifacts directory (e.g., ~/products/my-product). Durable artifacts are stored here, accessible across branches and sessions.",
+      "sensitive": false
+    }
+  }
+}
