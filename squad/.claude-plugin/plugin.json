@@ -16,10 +16,11 @@
     "small-teams"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
   "userConfig": {
     "product_home": {
+      "title": "Product Home",
       "description": "Absolute path to shared product artifacts directory (e.g., ~/products/my-product). Durable artifacts are stored here, accessible across branches and sessions.",
+      "type": "directory",
       "sensitive": false
     }
   }
