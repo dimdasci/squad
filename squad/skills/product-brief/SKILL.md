@@ -73,18 +73,28 @@ If `${user_config.product_home}` is not set, ask the user to configure it:
 
 ### 2. Problem framing — 3-phase canvas
 
-Work through these phases **one at a time, one question per message**:
+Work through these phases **one at a time, one open-ended question per
+message**. Do NOT offer predefined categories or multiple-choice
+options. The user knows their problem better than you — ask, listen,
+and dig deeper.
 
-**Phase 1 — Look Inward:** What assumptions do we already have about
-this problem? What do we think we know? Surface biases before
-proceeding.
+**Phase 1 — Look Inward:** Ask the user to describe what frustrates
+them or what opportunity they see. Listen to the full answer. Then ask
+what assumptions they already hold about why this problem exists. The
+goal is surfacing what the user already knows and believes.
 
-**Phase 2 — Look Outward:** Who actually has this problem? How do they
-experience it today? What does it cost them (time, money, frustration)?
+**Phase 2 — Look Outward:** Based on what they shared, ask who else
+has this problem. How do those people experience it today? What does it
+cost them (time, money, frustration)? What workarounds exist and why
+are they insufficient?
 
-**Phase 3 — Reframe:** Restate the problem as a "How Might We"
-question. Example: "How might we help [users] [achieve outcome] without
-[current pain]?"
+**Phase 3 — Reframe:** Synthesize what you heard into a "How Might We"
+question. Present it to the user for validation. Example: "How might we
+help [users] [achieve outcome] without [current pain]?"
+
+If the user has already described the problem in detail (as they often
+will), acknowledge what they said, extract the key elements, and move
+to Phase 3 directly. Do not re-ask what they already told you.
 
 ### 3. Target users — JTBD job stories
 
