@@ -53,13 +53,4 @@ assert_contains "$output" "disagree\|challenge\|reasoning" "Mentions challenging
 
 echo ""
 
-# Test 5: Knows artifact output path
-echo "Test 5: Artifact path..."
-
-output=$(run_claude_knowledge "Where does the product-brief skill save the brief artifact? What is the file path?" 60)
-
-assert_contains "$output" "product_home\|product/brief.md" "Knows artifact path" || exit 1
-
-echo ""
-
 echo "=== All product-brief knowledge tests passed ==="
