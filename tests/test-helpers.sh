@@ -54,6 +54,7 @@ run_claude_json() {
         --dangerously-skip-permissions \
         --max-turns "$max_turns" \
         --output-format stream-json \
+        --verbose \
         > "$log_file" 2>&1 || true
 }
 

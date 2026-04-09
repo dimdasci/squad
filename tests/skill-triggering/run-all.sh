@@ -32,7 +32,7 @@ for entry in "${TESTS[@]}"; do
     test_name="$skill ($(basename "$prompt_file" .txt))"
     echo "Testing: $test_name"
 
-    if "$SCRIPT_DIR/run-test.sh" "$skill" "$prompt_file" 3 2>&1 | tee "/tmp/squad-trigger-test-$skill.log"; then
+    if "$SCRIPT_DIR/run-test.sh" "$skill" "$prompt_file" 3 2>&1 | tee "/tmp/squad-trigger-test-$skill.log"; [[ ${PIPESTATUS[0]} -eq 0 ]]; then
         PASSED=$((PASSED + 1))
         RESULTS+=("[PASS] $test_name")
     else

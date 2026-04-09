@@ -1,1 +1,1 @@
-/product-brief
+Use the product-brief skill to create a product brief for this project.
