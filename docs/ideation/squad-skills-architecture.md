@@ -137,12 +137,14 @@ After CPTO approves, invoke `squad:product-backlog`.
 
 ## Skill Inventory
 
-### Implemented (v0.1.0)
+### Implemented (v0.2.0)
 
 | Skill | Role | Type | Lines | Validated |
 |-------|------|------|-------|-----------|
 | `product-brief` | Product Owner | Produce | 220 | Yes — e2e test |
 | `product-brief-review` | QA/Reviewer | Validate (fork) | 110 | Yes — e2e test |
+| `architecture-record` | Architect | Produce | 323 | Pending |
+| `architecture-record-review` | QA/Reviewer | Validate (fork) | 123 | Pending |
 
 ### Planned
 
@@ -150,7 +152,6 @@ After CPTO approves, invoke `squad:product-backlog`.
 |-------|------|------|----------|
 | `product-backlog` | Product Owner | Produce | Next |
 | `product-gate` | QA/Reviewer | Validate | High |
-| `architecture-record` | Architect | Produce | High |
 | `architecture-gate` | Architect | Validate (fork) | High |
 | `design-system` | Designer | Produce | Medium |
 | `design-gate` | Designer | Validate (fork) | Medium |
@@ -158,6 +159,12 @@ After CPTO approves, invoke `squad:product-backlog`.
 | `delivery-record` | PO + Designer | Produce | Medium |
 | `knowledge-log` | All roles | Produce | Low |
 | `health-register` | Dev + Architect | Produce | Low |
+
+Note: `architecture-record-review` validates the architecture record
+artifact (structural completeness, fitness, brief alignment).
+`architecture-gate` is a separate inner-cycle skill that validates
+implementation specs against the architecture record during the
+Superpowers execution loop.
 
 ### Inner cycle (Superpowers — not rebuilt)
 
