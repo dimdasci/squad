@@ -7,17 +7,23 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLUGIN_DIR="$REPO_ROOT/squad"
 
 # Run Claude Code with a prompt and capture output
-# Usage: run_claude "prompt text" [timeout_seconds]
+# Usage: run_claude "prompt text" [timeout_seconds] [max_turns]
 run_claude() {
     local prompt="$1"
     local timeout="${2:-60}"
+    local max_turns="${3:-}"
     local output_file
     output_file=$(mktemp)
 
-    if timeout "$timeout" claude -p "$prompt" \
-        --plugin-dir "$PLUGIN_DIR" \
-        --dangerously-skip-permissions \
-        > "$output_file" 2>&1; then
+    local cmd=(claude -p "$prompt"
+        --plugin-dir "$PLUGIN_DIR"
+        --dangerously-skip-permissions)
+
+    if [ -n "$max_turns" ]; then
+        cmd+=(--max-turns "$max_turns")
+    fi
+
+    if timeout "$timeout" "${cmd[@]}" > "$output_file" 2>&1; then
         cat "$output_file"
         rm -f "$output_file"
         return 0
@@ -27,6 +33,12 @@ run_claude() {
         rm -f "$output_file"
         return $exit_code
     fi
+}
+
+# Run Claude for knowledge questions (max-turns 1 to prevent skill execution)
+# Usage: run_claude_knowledge "question" [timeout_seconds]
+run_claude_knowledge() {
+    run_claude "$1" "${2:-60}" 5
 }
 
 # Run Claude with stream-json output for transcript analysis
@@ -212,6 +224,7 @@ cleanup_test_project() {
 export REPO_ROOT
 export PLUGIN_DIR
 export -f run_claude
+export -f run_claude_knowledge
 export -f run_claude_json
 export -f assert_contains
 export -f assert_not_contains
