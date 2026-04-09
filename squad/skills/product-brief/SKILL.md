@@ -195,13 +195,18 @@ Wait for the review to complete and read the findings.
 
 ### 9. Address findings
 
-If the review returns **FAIL**, fix the critical issues and re-run
-step 7 (write) and step 8 (review). Do not skip issues.
+If **PASS**, proceed directly to CPTO approval.
 
 If **PASS WITH NOTES**, read the suggestions. Fix what you agree with.
 You may proceed — these are non-blocking.
 
-If **PASS**, proceed directly to CPTO approval.
+If **FAIL**, work through each finding:
+- **Clear fix** (one obvious path) — fix it, note what you changed
+- **Multiple paths** — present the options to the human, always
+  including "Let's discuss this further"
+- **Disagree** — state your reasoning and ask the human to weigh in
+
+After all findings are addressed, re-run steps 7-8.
 
 ### 10. Request CPTO approval
 
