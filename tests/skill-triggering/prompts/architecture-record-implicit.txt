@@ -1,0 +1,1 @@
+We have an approved product brief and now need to figure out the technical architecture — what components, what technologies, how they connect.

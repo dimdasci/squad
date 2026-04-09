@@ -1,0 +1,1 @@
+Review this architecture record. Check if the component map is complete and the ADRs are well-formed.
