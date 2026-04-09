@@ -1,0 +1,1 @@
+I need to define what we're building for this project. We don't have a product brief yet and I want to start from the problem definition before jumping into code.
