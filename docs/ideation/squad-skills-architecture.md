@@ -187,6 +187,67 @@ technique per skill:
 | `knowledge-log` | Typed entries + staleness pruning |
 | `health-register` | DORA metrics + impact/effort debt scoring |
 
+## Testing (validated by product-brief tests)
+
+Three-tier bash test framework adapted from Superpowers. Tests run real
+Claude Code sessions and verify behavior through output parsing — no
+mock frameworks, no grader agents.
+
+**Directory structure:**
+
+```
+tests/
+├── test-helpers.sh              # Shared utilities (run_claude, assertions)
+├── run-tests.sh                 # Runner with --tier flag
+├── skill-knowledge/             # Tier 1: does Claude understand the skill?
+│   └── test-<skill>.sh
+├── skill-triggering/            # Tier 2: does the right skill activate?
+│   ├── run-test.sh              # Generic trigger harness
+│   ├── run-all.sh
+│   └── prompts/                 # One .txt per test case
+└── skill-execution/             # Tier 3: full workflow → correct artifacts?
+    ├── test-<skill>-execution.sh
+    └── fixtures/
+```
+
+**Three tiers:**
+
+| Tier | Speed | What it verifies | How |
+|------|-------|-----------------|-----|
+| Knowledge | ~30s | Claude loaded the skill and understands its process | `claude -p "question about skill"` + grep assertions |
+| Triggering | ~30s | Correct skill activates for a given prompt | `--output-format stream-json` + check for `"name":"Skill"` |
+| Execution | 5-15min | Full workflow produces correct artifacts | Run skill with rich context, verify output file structure |
+
+**Running tests:**
+
+```bash
+./tests/run-tests.sh                    # knowledge + triggering (fast)
+./tests/run-tests.sh --tier knowledge   # just knowledge
+./tests/run-tests.sh --tier triggering  # just triggering
+./tests/run-tests.sh --tier execution   # slow, full workflow
+./tests/run-tests.sh --verbose          # show all output
+```
+
+**Key lessons:**
+
+- Knowledge tests must cap `--max-turns` (5) to prevent Claude from
+  launching the actual skill workflow instead of answering the question
+- Assertion patterns need multiple alternatives (`fix\|Fix\|repair`)
+  because Claude's phrasing varies between runs
+- Triggering tests use `--output-format stream-json` and grep for
+  `"skill":"<name>"` in the JSON log — same technique as Superpowers
+- On API 500/429 errors, stop — do not retry
+
+**Adding tests for a new skill:**
+
+1. Add `tests/skill-knowledge/test-<skill>.sh` — 3-5 questions about
+   the skill's process, one `run_claude_knowledge` + assertions per test
+2. Add prompt files in `tests/skill-triggering/prompts/` — explicit,
+   implicit, and negative cases
+3. Add the skill to `tests/skill-triggering/run-all.sh` TESTS array
+4. Add `tests/skill-execution/test-<skill>-execution.sh` if the skill
+   produces artifacts that can be structurally validated
+
 ## Platform Notes (Claude Code)
 
 - Plugin manifest: `.claude-plugin/plugin.json`
