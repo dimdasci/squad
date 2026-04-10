@@ -148,17 +148,27 @@ After CPTO approves, invoke `squad:product-backlog`.
 
 ### Planned
 
+Priorities below rank by **foundation completeness**, not chaining
+convenience. `squad-process-model.md` names three co-equal durable
+foundations — Product, Architecture, and Design System — against which
+every downstream gate validates. Product and Architecture already have
+produce+review skills shipped; Design System has nothing, leaving the
+inner-cycle Design Gate without a standard to read. Closing that missing
+foundation outranks extending foundations that already exist, and both
+outrank gates (which presuppose their foundations) and outer/continuous
+skills (which presuppose a working inner cycle).
+
 | Skill | Role | Type | Priority |
 |-------|------|------|----------|
-| `product-backlog` | Product Owner | Produce | Next |
-| `product-gate` | QA/Reviewer | Validate | High |
-| `architecture-gate` | Architect | Validate (fork) | High |
-| `design-system` | Designer | Produce | Medium |
-| `design-gate` | Designer | Validate (fork) | Medium |
-| `qa-gate` | QA/Reviewer | Validate | Medium |
-| `delivery-record` | PO + Designer | Produce | Medium |
-| `knowledge-log` | All roles | Produce | Low |
-| `health-register` | Dev + Architect | Produce | Low |
+| `design-system` | Designer | Produce | 1 — Next (missing durable foundation) |
+| `product-backlog` | Product Owner | Produce | 2 — High (extends shipped Product layer) |
+| `product-gate` | QA/Reviewer | Validate | 3 — High (validates Product foundation) |
+| `architecture-gate` | Architect | Validate (fork) | 4 — High (validates Architecture foundation) |
+| `design-gate` | Designer | Validate (fork) | 5 — High (validates Design System foundation) |
+| `qa-gate` | QA/Reviewer | Validate | 6 — Medium (outer-cycle gate) |
+| `delivery-record` | PO + Designer | Produce | 7 — Medium (outer cycle) |
+| `knowledge-log` | All roles | Produce | 8 — Low (continuous) |
+| `health-register` | Dev + Architect | Produce | 9 — Low (continuous) |
 
 Note: `architecture-record-review` validates the architecture record
 artifact (structural completeness, fitness, brief alignment).
