@@ -219,7 +219,10 @@ Present the brief to the human with:
 Wait for human response:
 
 - **Approved** → update brief status to "approved", set date and
-  approver name. Proceed to `squad:product-backlog`.
+  approver name. The brief is now the foundation for two independent
+  next steps: `squad:architecture-record` (Architect) and
+  `squad:design-system` (Designer). They can run in any order and
+  neither depends on the other.
 - **Changes requested** → read the feedback carefully. Go back to the
   relevant step (e.g., "users are wrong" → step 3, "scope too broad" →
   step 4). After changes, re-run steps 7-8-9-10 (rewrite, re-review,
@@ -229,9 +232,13 @@ Do not proceed to other skills until the brief status is "approved."
 
 ## Chains To
 
-After CPTO approves the brief, the next step is the
-`squad:product-backlog` skill to decompose the brief into shaped
-backlog items.
+After CPTO approves the brief, both `squad:architecture-record` and
+`squad:design-system` can run as independent, equal-rank translations
+of the brief into durable foundations. Neither depends on the other.
+
+`squad:product-backlog` (planned, not yet shipped) will decompose the
+brief into shaped backlog items once all three durable foundations —
+Product Brief, Architecture Record, Design System Doc — exist.
 
 ## Common Rationalizations
 

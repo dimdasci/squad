@@ -288,7 +288,11 @@ Present the record to the human with:
 Wait for human response:
 
 - **Approved** → update record status to "approved", set date and
-  approver. Proceed to `squad:product-backlog`.
+  approver. Architecture Record is one of three durable foundations
+  (Product Brief, Architecture Record, Design System Doc). Features
+  that touch UI cannot be implemented until `squad:design-system` has
+  also produced an approved Design System Doc — the inner-cycle
+  Design Gate has nothing to validate against otherwise.
 - **Changes requested** → go back to the relevant step. After changes,
   re-run steps 10-11-12-13.
 
@@ -311,9 +315,15 @@ These rules prevent common failure modes:
 
 ## Chains To
 
-After CPTO approves the record, the next step is the
-`squad:product-backlog` skill to decompose the brief into shaped
-backlog items informed by this architecture.
+Architecture Record and Design System Doc are independent,
+equal-rank foundations — neither depends on the other. After CPTO
+approves the record, run `squad:design-system` next if it has not
+already produced an approved Design System Doc. Both foundations
+must exist before the inner cycle (Superpowers execution loop) can
+run against complete standards.
+
+`squad:product-backlog` (planned, not yet shipped) will decompose the
+brief into shaped backlog items informed by this architecture.
 
 ## Common Rationalizations
 
