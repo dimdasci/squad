@@ -232,13 +232,18 @@ Do not proceed to other skills until the brief status is "approved."
 
 ## Chains To
 
-After CPTO approves the brief, both `squad:architecture-record` and
+After CPTO approves the brief, `squad:architecture-record` and
 `squad:design-system` can run as independent, equal-rank translations
 of the brief into durable foundations. Neither depends on the other.
+`squad:product-naming` is a third independent translation that runs
+when the brief has no chosen product name yet — it can run standalone
+or be orchestrated as a dependency by `squad:design-system`.
 
 `squad:product-backlog` (planned, not yet shipped) will decompose the
-brief into shaped backlog items once all three durable foundations —
-Product Brief, Architecture Record, Design System Doc — exist.
+brief into shaped backlog items once all four durable foundations —
+Product Brief, Architecture Record, Design System Doc, and Product
+Naming (the sole artifact of the Product Identity foundation) —
+exist.
 
 ## Common Rationalizations
 

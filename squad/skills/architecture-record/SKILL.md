@@ -288,11 +288,12 @@ Present the record to the human with:
 Wait for human response:
 
 - **Approved** → update record status to "approved", set date and
-  approver. Architecture Record is one of three durable foundations
-  (Product Brief, Architecture Record, Design System Doc). Features
-  that touch UI cannot be implemented until `squad:design-system` has
-  also produced an approved Design System Doc — the inner-cycle
-  Design Gate has nothing to validate against otherwise.
+  approver. Architecture Record is one of four durable foundations
+  (Product, Architecture, Design System, Product Identity).
+  Features that touch UI cannot be implemented until
+  `squad:design-system` has also produced an approved Design System
+  Doc — the inner-cycle Design Gate has nothing to validate against
+  otherwise.
 - **Changes requested** → go back to the relevant step. After changes,
   re-run steps 10-11-12-13.
 
