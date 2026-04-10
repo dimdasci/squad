@@ -1,5 +1,14 @@
 # Three-Layer Model
 
+> **Status: historical precursor.** This doc describes an early
+> conceptual model where the framework added three layers above
+> Superpowers (Product, Architecture, Specification). The current
+> authoritative model has **four durable foundations** (Product,
+> Architecture, Design System, Product Identity) and **five
+> artifact layers** (Durable, Outer Cycle, Inner Cycle, Continuous,
+> Reference). See `squad-process-model.md` and `squad-artifacts.md`
+> for the current state. Preserved here as a decision trail.
+
 The framework adds three layers above the Superpowers execution loop.
 Each layer produces persistent artifacts that the layers below consume.
 

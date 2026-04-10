@@ -1,5 +1,15 @@
 # Shared Knowledge Layer
 
+> **Status: design rationale.** This doc explains *why* squad
+> artifacts live outside the working tree in a shared directory —
+> the motivation and design decision. The current implementation
+> uses `${user_config.product_home}` (not `${user_config.product_home}`), and the
+> artifact taxonomy has evolved into five layers with four durable
+> foundations. See `squad-artifacts.md` and `squad-skills-architecture.md`
+> for the current state. Preserved here because the rationale
+> remains load-bearing for anyone questioning *why* the shared
+> external path exists at all.
+
 The critical design constraint: artifacts must be accessible to multiple
 Claude Code instances working on independent branches simultaneously.
 
@@ -18,7 +28,7 @@ are invisible to Instance B.
 ## The Solution: External Artifact Root
 
 Artifacts live at a path defined by an environment variable (e.g.,
-`$PRODUCT_HOME`). This path is:
+`${user_config.product_home}`). This path is:
 - **Outside the repository working tree** — not affected by branch switches
 - **Shared across all Claude Code instances** for the same project
 - **Readable by any session** without checkout or merge
@@ -29,13 +39,13 @@ Artifacts live at a path defined by an environment variable (e.g.,
 ```
 Instance A (branch: feature-auth)     Instance B (branch: feature-payments)
          │                                        │
-         ├── reads $PRODUCT_HOME/product/brief.md │
-         ├── reads $PRODUCT_HOME/arch/components.md
-         ├── reads $PRODUCT_HOME/specs/auth/       │
-         │                                        ├── reads $PRODUCT_HOME/specs/payments/
+         ├── reads ${user_config.product_home}/product/brief.md │
+         ├── reads ${user_config.product_home}/arch/components.md
+         ├── reads ${user_config.product_home}/specs/auth/       │
+         │                                        ├── reads ${user_config.product_home}/specs/payments/
          │                                        │
-         ├── WRITES $PRODUCT_HOME/specs/auth/     │ (after feature ships)
-         │                                        ├── WRITES $PRODUCT_HOME/specs/payments/
+         ├── WRITES ${user_config.product_home}/specs/auth/     │ (after feature ships)
+         │                                        ├── WRITES ${user_config.product_home}/specs/payments/
 ```
 
 **Read:** Any instance reads any artifact at any time.
