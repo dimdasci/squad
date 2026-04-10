@@ -18,14 +18,23 @@ squad/
 │   └── plugin.json              # Manifest: name, version, userConfig
 ├── skills/
 │   ├── product-brief/
-│   │   └── SKILL.md             # PO: create/maintain product brief
+│   │   └── SKILL.md             # Shipped v0.2.0
 │   ├── product-brief-review/
-│   │   └── SKILL.md             # QA: review brief (context: fork)
+│   │   └── SKILL.md             # Shipped v0.2.0 (context: fork)
+│   ├── architecture-record/
+│   │   └── SKILL.md             # Shipped v0.2.0
+│   ├── architecture-record-review/
+│   │   └── SKILL.md             # Shipped v0.2.0 (context: fork)
+│   ├── product-naming/          # planned — design-family prerequisite
+│   ├── product-naming-review/   # planned (context: fork)
+│   ├── design-research-references/  # planned — Reference layer
+│   ├── design-research-audience/    # planned — Reference layer
+│   ├── design-research-standards/   # planned — Reference layer
+│   ├── design-system/           # planned — orchestrator
+│   ├── design-system-review/    # planned (context: fork)
 │   ├── product-backlog/         # planned
 │   ├── product-gate/            # planned
-│   ├── architecture-record/     # planned
 │   ├── architecture-gate/       # planned
-│   ├── design-system/           # planned
 │   ├── design-gate/             # planned
 │   ├── qa-gate/                 # planned
 │   ├── delivery-record/         # planned
@@ -48,6 +57,19 @@ Skills and hooks directories are auto-discovered — do not duplicate
 paths in the manifest.
 
 ## Skill Design Patterns
+
+**Skills vs. activities (clarifier).** The role × activity matrix in
+`squad-process-model.md` counts activities, not skills. A single
+activity may be implemented by multiple skills — for example, the
+Designer's "maintain design system" activity is implemented by four
+skills (`design-system` as orchestrator plus three
+`design-research-*` helpers), and the Designer's separate "maintain
+product identity and naming" activity is implemented by one skill
+(`product-naming`). The 25% cap in the role matrix is a balance
+rule on activity ownership, not a hard limit on skill count. When
+introducing a new skill, first determine whether it implements an
+existing activity or proposes a new one — only new activities need
+to be added to the matrix explicitly.
 
 ### Proven patterns (validated by product-brief test)
 
@@ -98,15 +120,21 @@ predictable structure:
 
 ```
 $product_home/
-├── product/
+├── product/                     # Product foundation (PO)
 │   ├── brief.md                 # Product Brief
 │   └── backlog/                 # Product Backlog (shaped items)
-├── architecture/
+├── architecture/                # Architecture foundation (Architect)
 │   ├── record.md                # Architecture Record (map + ADRs)
 │   ├── api-contracts/           # API Contracts
 │   └── data-models/             # Data Models
-├── design/
-│   └── system.md                # Design System Doc
+├── design/                      # Design System foundation (Designer)
+│   ├── system.md                # Design System Doc
+│   └── research/                # Reference layer (design research)
+│       ├── references.md        # Design Research — References
+│       ├── audience.md          # Design Research — Audience
+│       └── standards.md         # Design Research — Standards
+├── identity/                    # Product Identity foundation (Designer)
+│   └── naming.md                # Product Naming
 ├── qa/
 │   ├── scenarios/               # Test Scenarios (cumulative)
 │   └── reports/                 # QA Reports
@@ -114,6 +142,17 @@ $product_home/
     ├── knowledge.md             # Knowledge Log
     └── health.md                # System Health & Debt Register
 ```
+
+Each of the four durable foundations gets its own top-level
+directory. The Designer role owns two foundation directories
+(`design/` and `identity/`) — this is fine because foundation
+ownership, not directory ownership, is the organizing principle.
+
+Reference-layer artifacts that are **emergent** (feature-work findings,
+ad-hoc handoff notes, coordination memos) are self-regulated — the
+producing agent picks the filename inside its role's directory
+(e.g., `architecture/notes/<slug>.md`, `product/research/<slug>.md`).
+Reference classification is by property, not location.
 
 **6. Skill chaining**
 
@@ -124,6 +163,119 @@ names the next skill after completion:
 ## Chains To
 After CPTO approves, invoke `squad:product-backlog`.
 ```
+
+**7. Orchestration**
+
+Some skills are **entry points** that invoke other skills as
+dependencies before doing their own work. The `design-system` skill
+is the first instance: it reads its upstream dependencies (approved
+product brief, optional research briefs, optional product naming),
+invokes the missing sub-skills to create them if needed, then
+synthesizes the Design System Doc.
+
+Orchestration is distinct from chaining:
+
+| Aspect | Chaining | Orchestration |
+|---|---|---|
+| Direction | Forward (A → B) | Fan-in (B, C, D → A) |
+| Control | A declares "next: B" | A calls B, C, D as prerequisites |
+| Data flow | A's output is B's trigger | B, C, D's outputs become A's inputs |
+| Invocation | Declarative | Imperative |
+| Shape | Linear sequence | Dependency resolution |
+
+**Contract for orchestrators:**
+
+1. **Sub-skills must be independently invocable.** The orchestrated
+   skill must stand on its own for standalone use; the orchestrator
+   just invokes it like any other caller.
+2. **Check dependency state before invoking.** The orchestrator reads
+   the filesystem to see which dependency artifacts already exist.
+   If an artifact exists and is recent enough, skip invocation. This
+   keeps orchestration idempotent.
+3. **Read outputs read-only.** The orchestrator never mutates a
+   sub-skill's artifact — only its own durable output.
+4. **Handle partial and failed states explicitly.** Some dependencies
+   may exist while others don't. Some may be stale. Some sub-skill
+   runs may return `BLOCKED`. The orchestrator decides per-case:
+   proceed with what's available, escalate to CPTO, or halt.
+
+**Sub-skill status protocol.** When a sub-skill is invoked as a
+dependency by an orchestrator, it ends its work with a Sub-skill
+Report — a bulleted prose block the orchestrator reads narratively.
+No regex, no sentinels, no files. This is lifted from Superpowers'
+`subagent-driven-development` pattern directly, with one Squad-
+specific field added to handle the shared working directory.
+
+Report format:
+
+````markdown
+## Sub-skill Report
+
+- **Status:** DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
+- **Artifact:** <path to the file written, or "none">
+- **Summary:** <1–3 sentences on what was produced or attempted>
+- **Notes / Question / Reason:** <one of these, matching status:
+  notes for DONE_WITH_CONCERNS, the blocking question for
+  NEEDS_CONTEXT, the reason for BLOCKED>
+- **Working state:** clean | partial: <list any files written before
+  stopping, if status is not DONE>
+````
+
+Status vocabulary (exact literal strings, inherited from Superpowers):
+
+- `DONE` — artifact produced, sub-skill's self-validation passed
+- `DONE_WITH_CONCERNS` — artifact produced but with caveats the
+  orchestrator should read
+- `NEEDS_CONTEXT` — sub-skill hit a question it cannot answer alone
+- `BLOCKED` — sub-skill could not produce the artifact
+
+**Why `Working state` is Squad-specific.** Superpowers dispatches
+subagents in isolated contexts — they can't pollute the controller's
+working directory. Squad's sibling skills share the working
+directory, so a sub-skill that stops at `BLOCKED` or `NEEDS_CONTEXT`
+may have already written partial artifacts. The `Working state`
+field forces the sub-skill to declare this explicitly so the
+orchestrator can roll back, accept, or continue with open eyes.
+
+**Handling rules for the orchestrator:**
+
+- **DONE** — read the artifact at the declared path, proceed.
+- **DONE_WITH_CONCERNS** — read the artifact and the notes. If any
+  note is load-bearing for the orchestrator's own work, surface to
+  CPTO before proceeding. Otherwise proceed and carry the notes
+  forward into the orchestrator's own output.
+- **NEEDS_CONTEXT** — halt, surface the question to CPTO verbatim,
+  re-invoke the sub-skill with CPTO's answer as context. If the
+  sub-skill asks a second time on the same topic, escalate to CPTO
+  that the sub-skill appears stuck.
+- **BLOCKED** — halt, surface the reason to CPTO verbatim. **Never
+  fall through to built-in knowledge silently.** If Working state
+  reports partial files, offer CPTO the choice to keep or roll back
+  before deciding how to proceed.
+
+**Parsing is narrative.** The orchestrator is an LLM reading prose,
+not a regex engine. This matches how Superpowers handles sub-agent
+status and keeps Squad consistent with Claude Code's "trust the
+agent" philosophy — simple prose rules over machine-parseable
+formats.
+
+**When to use orchestration vs chaining.** Use **chaining** for
+linear forward flows where each skill triggers the next (e.g.,
+`product-brief` → `architecture-record` → inner cycle), including
+the fan-out case where one skill declares multiple independent
+next-chains (each chain runs standalone, nothing synthesizes
+them). Use **orchestration** when one skill needs outputs from
+multiple upstream skills that may or may not exist and must be
+synthesized into the orchestrator's own output.
+
+**Precedent.** Superpowers' `subagent-driven-development` skill
+dispatches a sequence of subagents (implementer, spec reviewer, code
+quality reviewer) with exactly this status protocol and handling
+pattern. Squad borrows the contract structure and adapts it from
+subagent dispatch (isolated context) to sibling-skill invocation
+(shared working directory) — the `Working state` field is the
+adaptation. See also Superpowers' `dispatching-parallel-agents` for
+the fan-out variant.
 
 ### Anti-patterns to avoid
 
@@ -149,32 +301,78 @@ After CPTO approves, invoke `squad:product-backlog`.
 ### Planned
 
 Priorities below rank by **foundation completeness**, not chaining
-convenience. `squad-process-model.md` names three co-equal durable
-foundations — Product, Architecture, and Design System — against which
-every downstream gate validates. Product and Architecture already have
-produce+review skills shipped; Design System has nothing, leaving the
-inner-cycle Design Gate without a standard to read. Closing that missing
-foundation outranks extending foundations that already exist, and both
-outrank gates (which presuppose their foundations) and outer/continuous
-skills (which presuppose a working inner cycle).
+convenience. `squad-process-model.md` names four durable foundations
+of equal rank — Product, Architecture, Design System, and Product
+Identity — against which every downstream gate validates. Product
+and Architecture already have produce+review skills shipped; Design
+System and Product Identity have nothing, leaving the inner-cycle
+Design Gate without a standard to read and leaving naming unbound
+to any artifact. Closing those two missing foundations outranks
+extending foundations that already exist, and both outrank gates
+(which presuppose their foundations) and outer/continuous skills
+(which presuppose a working inner cycle).
 
-| Skill | Role | Type | Priority |
-|-------|------|------|----------|
-| `design-system` | Designer | Produce | 1 — Next (missing durable foundation) |
-| `product-backlog` | Product Owner | Produce | 2 — High (extends shipped Product layer) |
-| `product-gate` | QA/Reviewer | Validate | 3 — High (validates Product foundation) |
-| `architecture-gate` | Architect | Validate (fork) | 4 — High (validates Architecture foundation) |
-| `design-gate` | Designer | Validate (fork) | 5 — High (validates Design System foundation) |
-| `qa-gate` | QA/Reviewer | Validate | 6 — Medium (outer-cycle gate) |
-| `delivery-record` | PO + Designer | Produce | 7 — Medium (outer cycle) |
-| `knowledge-log` | All roles | Produce | 8 — Low (continuous) |
-| `health-register` | Dev + Architect | Produce | 9 — Low (continuous) |
+**Design-skills family.** The Design System foundation is produced
+by a family of four skills (plus one review pair) using the
+orchestration pattern. `design-system` is the entry-point
+orchestrator; it invokes three `design-research-*` helpers as
+dependencies before synthesizing the Design System Doc. All family
+members are independently invocable for standalone use.
 
-Note: `architecture-record-review` validates the architecture record
-artifact (structural completeness, fitness, brief alignment).
-`architecture-gate` is a separate inner-cycle skill that validates
-implementation specs against the architecture record during the
-Superpowers execution loop.
+**Product Identity skills.** The Product Identity foundation is
+produced by a separate pair of skills — `product-naming` and
+`product-naming-review` — which are not part of the design-skills
+family. `design-system` invokes `product-naming` as a dependency
+when the brief has no name, crossing the foundation boundary (skill
+invocation is orthogonal to foundation membership).
+
+Bottom-up build order: Product Identity and design-research
+dependencies first, then the `design-system` orchestrator.
+
+| Skill | Role | Foundation | Type | Priority |
+|-------|------|-----------|------|----------|
+| `product-naming` | Designer | Product Identity | Produce | 1 — Next (closes Identity foundation; also standalone for rebrands) |
+| `product-naming-review` | Designer / QA | Product Identity | Validate (fork) | 1b — pairs with above |
+| `design-research-references` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with peer landscape |
+| `design-research-audience` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with audience context |
+| `design-research-standards` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with applicable standards |
+| `design-system` | Designer | Design System | Produce (orchestrator) | 3 — synthesizes dependencies into the durable Design System Doc |
+| `design-system-review` | Designer / QA | Design System | Validate (fork) | 3b — pairs with above |
+| `product-backlog` | Product Owner | Product | Produce | 4 — extends shipped Product foundation |
+| `product-gate` | QA / Reviewer | Product | Validate | 5 — validates Product foundation |
+| `architecture-gate` | Architect | Architecture | Validate (fork) | 6 — validates Architecture foundation |
+| `design-gate` | Designer | Design System | Validate (fork) | 7 — validates Design System foundation |
+| `qa-gate` | QA / Reviewer | — | Validate | 8 — outer-cycle gate (also covers Product Identity drift via terminology checks) |
+| `delivery-record` | PO + Designer | — | Produce | 9 — outer cycle |
+| `knowledge-log` | All roles | — | Produce | 10 — continuous |
+| `health-register` | Dev + Architect | — | Produce | 11 — continuous |
+
+Notes:
+- `product-naming` lives under Designer role on craft grounds
+  (naming techniques, phonetic and linguistic sensitivity, creative
+  generation), with legal and IP authority absorbed by the CPTO at
+  approval time. The artifact lives at
+  `${user_config.product_home}/identity/naming.md` and is the sole
+  member of the Product Identity durable foundation.
+- The three `design-research-*` skills are the first named members
+  of the Reference layer (see `squad-artifacts.md`). They are
+  optional dependencies — `design-system` falls through to built-in
+  knowledge if a research brief is missing, with reduced quality.
+- Product Identity has no dedicated inner-cycle gate. The QA Gate
+  covers naming consistency (capitalization, short forms, forbidden
+  variants) as part of its terminology checks. Human CPTO approval
+  at artifact creation is the primary check; QA Gate catches drift
+  during feature execution.
+- `architecture-record-review` validates the architecture record
+  artifact (structural completeness, fitness, brief alignment).
+  `architecture-gate` is a separate inner-cycle skill that validates
+  implementation specs against the architecture record during the
+  Superpowers execution loop.
+- SKILL.md files that exceed the 500-line cap use supporting files
+  (guides, templates) per the shipped `architecture-record` pattern
+  (`survey-guide.md`, `record-guide.md`). Expect design-family skills
+  to need supporting files — the scope is substantially broader than
+  product-brief or architecture-record.
 
 ### Inner cycle (Superpowers — not rebuilt)
 
@@ -197,8 +395,12 @@ technique per skill:
 | `product-backlog` | Epic hypothesis + Given/When/Then + ICE scoring |
 | `architecture-record` | C4 Model L1+L2 + Nygard ADR |
 | `architecture-gate` | Fitness functions + boundary checklist |
-| `design-system` | Design tokens + Gstack DESIGN.md template |
-| `design-gate` | Confidence-tier checklist + WCAG essentials |
+| `product-naming` | Classification framework (descriptive / suggestive / abstract / invented / founder / acronym) + phonetic and cross-linguistic checks + mandatory validation (domain WHOIS, trademark search via WIPO/USPTO/EUIPO, social and package handles, existing-product collision search) |
+| `design-research-references` | Three-layer synthesis: tried-and-true (category baseline) + trending (current discourse) + first-principles (deliberate departures). Peer-product landscape analysis. |
+| `design-research-audience` | JTBD-traced audience analysis + existing-convention inventory + accessibility needs mapping |
+| `design-research-standards` | WCAG level selection + platform HIG enumeration (Apple HIG, Material Design where applicable) + industry regulation review + CLI norms (clig.dev, POSIX) + API error voice conventions |
+| `design-system` | Orchestration of `product-naming` + `design-research-*` dependencies, then synthesis into a 7-category durable doc (principles, voice, terminology, IA, interaction, visual, surface conventions). Gstack DESIGN.md template as structural baseline for the visual-language category. SAFE/RISK framing for the creative proposal. |
+| `design-gate` | Confidence-tier checklist + WCAG essentials + per-surface routing (GUI, CLI, docs, API error voice) |
 | `qa-gate` | BDD scenarios + exploratory testing charters |
 | `delivery-record` | Delta changelog + narrative arc demo |
 | `knowledge-log` | Typed entries + staleness pruning |

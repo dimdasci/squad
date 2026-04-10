@@ -15,16 +15,20 @@ engineering, and entrepreneurship.
 ## Key documents
 
 - `docs/product-statement.md` — core product definition
-- `docs/ideation/squad-process-model.md` — 5 roles, 4 gates, 3 durable foundations
-- `docs/ideation/squad-artifacts.md` — 14 artifacts across 4 layers
-- `docs/ideation/squad-skills-architecture.md` — plugin structure, skill priorities
+- `docs/ideation/squad-process-model.md` — 5 roles, 4 gates, 4 durable foundations (Product, Architecture, Design System, Product Identity)
+- `docs/ideation/squad-artifacts.md` — 18 artifacts across 5 layers (Durable, Outer, Inner, Continuous, Reference)
+- `docs/ideation/squad-skills-architecture.md` — plugin structure, skill design patterns, skill priorities
 - `docs/analyses/` — framework deep-dives (gstack, superpowers, gsd2, pm-skills, openspec)
 
 ## Current state
 
 Phase 3 — squad plugin under `squad/`. Shipped produce+validate pairs:
-`product-brief`, `architecture-record`. Next: build `design-system` +
-review to close the only remaining empty durable foundation.
+`product-brief`, `architecture-record`. Two durable foundations remain
+empty: **Design System** (to be produced by the `design-system`
+orchestrator plus three `design-research-*` helpers) and **Product
+Identity** (to be produced by `product-naming`). Bottom-up build
+order: `product-naming` and `design-research-*` first, then
+`design-system` as the orchestrator that synthesizes them.
 
 ## Running tests
 

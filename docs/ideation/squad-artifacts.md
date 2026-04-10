@@ -5,28 +5,42 @@ Date: 2026-04-07
 
 ## Overview
 
-14 artifacts across 4 layers supporting the squad process model.
-Artifacts align with Superpowers at the inner cycle boundary — the
-inner cycle artifacts (Implementation Spec, Task Breakdown, Code +
-Tests, Review Findings) map 1:1 to existing Superpowers outputs
-(design spec, implementation plan, git commits, code review report).
+18 named artifacts across 5 layers supporting the squad process model.
+The Durable layer hosts the four foundations (Product, Architecture,
+Design System, Product Identity) plus Test Scenarios as a QA support
+artifact. Artifacts align with Superpowers at the inner cycle
+boundary — the inner cycle artifacts (Implementation Spec, Task
+Breakdown, Code + Tests, Review Findings) map 1:1 to existing
+Superpowers outputs (design spec, implementation plan, git commits,
+code review report).
 
-Our framework adds artifacts for the durable layer, outer cycle, and
-continuous layer — everything Superpowers doesn't cover.
+Our framework adds artifacts for the durable layer, outer cycle,
+continuous layer, and the Reference layer — everything Superpowers
+doesn't cover. The Reference layer is extensible: agents can produce
+additional ad-hoc reference artifacts as feature work surfaces new
+findings, without adding each one to the named inventory.
 
 ## Artifact Catalog
 
-### Durable (7 artifacts, human-approved)
+### Durable (8 artifacts across 4 foundations, human-approved)
 
-| Artifact | Produced by | Consumed by | Gate |
-|----------|------------|-------------|------|
-| Product Brief | Product Owner | QA, PO | Product Gate |
-| Product Backlog (shaped items) | Product Owner | QA, Architect | Product Gate |
-| Architecture Record (map + ADRs) | Architect | Architect, Dev, PO | Arch Gate |
-| API Contracts | Architect | Dev, Architect, QA | Arch Gate |
-| Data Models | Architect | Dev, Architect, QA | Arch Gate |
-| Design System Doc | Designer | Dev, Designer | Design Gate |
-| Test Scenarios (cumulative) | QA | QA, Dev | QA Gate |
+The durable layer groups into **four foundations** (see
+`squad-process-model.md`): Product, Architecture, Design System,
+and Product Identity. Each foundation is owned by a single role and
+requires human approval on changes. Test Scenarios is a QA support
+artifact that doesn't belong to a foundation — it's a cumulative
+regression asset that feeds the QA Gate.
+
+| Artifact | Foundation | Produced by | Consumed by | Gate |
+|----------|-----------|------------|-------------|------|
+| Product Brief | Product | Product Owner | QA, PO | Product Gate |
+| Product Backlog (shaped items) | Product | Product Owner | QA, Architect | Product Gate |
+| Architecture Record (map + ADRs) | Architecture | Architect | Architect, Dev, PO | Arch Gate |
+| API Contracts | Architecture | Architect | Dev, Architect, QA | Arch Gate |
+| Data Models | Architecture | Architect | Dev, Architect, QA | Arch Gate |
+| Design System Doc | Design System | Designer | Dev, Designer | Design Gate |
+| Product Naming | Product Identity | Designer | PO, Designer, Dev, docs, marketing | — (QA Gate covers drift) |
+| Test Scenarios (cumulative) | — (QA support) | QA | QA, Dev | QA Gate |
 
 **Product Brief** — vision, goals, success criteria, target users. The
 north star that persists across many cycles.
@@ -50,8 +64,43 @@ and are consumed directly by implementers writing code.
 API Contracts — reference material during implementation, separate
 cadence.
 
-**Design System Doc** — visual standards, component patterns, interaction
-rules. The source of truth for the Design Gate.
+**Design System Doc** — the durable standard covering seven content
+categories: principles, voice and tone, terminology and language,
+information architecture, interaction patterns, visual language (GUI
+and/or CLI — mandatory whenever the product has any human-facing
+surface; omitted only for pure API or headless services), and surface
+conventions (per declared surface: CLI output and exit codes, GUI
+component rules, docs style, API error voice, etc.). The source of
+truth for the Design Gate. Produced by the `design-system` orchestrator
+skill, which invokes `product-naming` and the `design-research-*`
+helpers as dependencies before synthesizing. Lives at
+`${user_config.product_home}/design/system.md`.
+
+**Product Naming** — the sole artifact of the **Product Identity**
+foundation. Contains the chosen product name plus its supporting
+system: naming philosophy (why this name, what it expresses),
+approved short forms and nicknames, forbidden misspellings, how the
+name appears in sentences (capitalization, pronunciation,
+stylization rules), what the product is NOT called, usage rules for
+product contexts vs marketing materials, and the full validation
+record (domain availability, trademark search results, social and
+package handle availability, existing-product collision check).
+
+Product Identity is a **separate foundation**, not a sub-concern of
+Design System. The name has broader consumers (PO, Designer, Dev,
+QA, docs, marketing, legal) and a different lifecycle (near-static,
+changes only on rebrand) than Design System's continuously-evolving
+standards. Owned by the Designer role on craft grounds (advanced
+naming techniques, phonetic and cross-linguistic sensitivity,
+creative generation) with all legal and IP authority absorbed by
+the CPTO at approval time.
+
+No dedicated gate — the inner cycle's QA Gate covers naming
+consistency as part of its terminology checks (catches drift in
+capitalization, short forms, forbidden variants). Produced by the
+`product-naming` skill, which can run standalone for rebrands or be
+invoked as a dependency by `design-system` when the brief has no
+name. Lives at `${user_config.product_home}/identity/naming.md`.
 
 **Test Scenarios** — cumulative regression and acceptance test suite.
 Grows over time as QA discovers new edge cases and Review Findings feed
@@ -125,6 +174,73 @@ deprecated patterns). Each debt item gets severity and suggested ADR
 if it requires an architectural decision. Feeds back into Product
 Backlog as tech items.
 
+### Reference (3 named artifacts, plus ad-hoc)
+
+| Artifact | Produced by | Consumed by | Gate |
+|----------|------------|-------------|------|
+| Design Research — References | Designer | `design-system`, PO | — |
+| Design Research — Audience | Designer | `design-system`, PO | — |
+| Design Research — Standards | Designer | `design-system`, Architect | — |
+
+**Reference** artifacts are persistent shared material that informs
+work without committing to any outcome. The layer covers both formal
+evidence (research briefs, audits, benchmarks, competitive analyses)
+and emergent working material (feature-work findings, handoffs,
+scratch notes, coordination memos between agents). Lifespans range
+from minutes (a single agent handoff) to months (a research brief
+reused across multiple design iterations).
+
+Defining properties:
+- Persists on disk, reusable across sessions, branches, and agents
+- Not human-approved; self-validated only (producer checks that
+  sources are cited and coverage is complete)
+- Non-committing — evidence that *feeds* decisions, never *is* a
+  decision
+- First landing zone for discoveries made during feature work;
+  findings can later be promoted to the Product Backlog, System
+  Health & Debt Register, Knowledge Log, or trigger updates to a
+  durable foundation
+
+**Structure follows purpose.** Pre-planned Reference artifacts get
+fixed paths so downstream skills can read them reliably — the three
+design research briefs live at `${user_config.product_home}/design/research/*.md`.
+Emergent Reference artifacts are **self-regulated**: the producing
+agent picks a filename inside its role's directory without framework
+ceremony (e.g., `${user_config.product_home}/architecture/notes/<slug>.md`,
+`${user_config.product_home}/product/research/<slug>.md`). Classification is by
+property, not by location — Reference artifacts always live inside
+the producing role's directory, never in a centralized `references/`
+folder.
+
+**Design Research — References** — peer products in the product's
+space, category landscape, where the design plays safe with category
+conventions vs takes deliberate creative risks. Produced by Designer
+via the `design-research-references` skill; consumed by `design-system`
+as input to the aesthetic and interaction proposal.
+
+**Design Research — Audience** — target users (traced from the
+brief's JTBD statements), tools they already use, conventions they
+already know, accessibility needs applicable to their context.
+Produced by Designer via the `design-research-audience` skill;
+consumed by `design-system` and by `product-brief` revisions.
+
+**Design Research — Standards** — applicable WCAG level, platform
+human interface guidelines (Apple HIG, Material Design, etc. — only
+when the product runs on those platforms), industry regulations
+affecting UI patterns (e.g., HIPAA, GDPR consent flows), CLI norms
+(clig.dev, POSIX), and API error voice conventions. Produced by
+Designer via the `design-research-standards` skill; consumed by
+`design-system` and by `architecture-record` revisions.
+
+Reference artifacts do **not** have fork-context review skills.
+Self-validation is sufficient: the producing skill checks its own
+output for source citation and coverage completeness. This is a
+pragmatic deviation from the produce/validate pattern that applies
+to Durable artifacts — Reference material is inputs to approved
+artifacts, not commitments in its own right, so the downstream
+durable approval (of the Design System Doc) implicitly covers the
+references it cites.
+
 ## Superpowers Alignment
 
 | Superpowers Artifact | Path Pattern | Our Equivalent |
@@ -196,7 +312,14 @@ digraph artifacts {
     fontcolor="#f472b6"
     fontsize=11
 
+    // Durable foundation artifacts (solid border): Design System + Product Identity
     ds_system [label="Design System Doc" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0"]
+    ds_naming [label="Product Naming" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0"]
+
+    // Reference-layer artifacts (dashed border = non-durable, optional inputs, self-validated)
+    ds_ref_references [label="Design Research\nReferences" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
+    ds_ref_audience [label="Design Research\nAudience" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
+    ds_ref_standards [label="Design Research\nStandards" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
   }
 
   subgraph cluster_dev {
@@ -254,6 +377,17 @@ digraph artifacts {
   ds_system -> gate_design [color="#f472b6" penwidth=1.5]
   dv_code -> gate_design [color="#6ee7b7" penwidth=1.5]
 
+  // ── DESIGNER INTERNAL DEPENDENCIES ──
+  // Product Naming feeds the Design System orchestrator and is referenced by the brief.
+  // No cycle gate for naming — QA Gate covers drift via terminology checks.
+  ds_naming -> ds_system [color="#f472b6" penwidth=1.5 label="name"]
+  ds_naming -> po_brief [color="#f472b6" penwidth=1.5 style=dashed label="referenced"]
+
+  // Reference-layer artifacts are optional inputs to the Design System orchestrator.
+  ds_ref_references -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
+  ds_ref_audience -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
+  ds_ref_standards -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
+
   qa_scenarios -> gate_qa [color="#60a5fa" penwidth=1.5]
   dv_code -> gate_qa [color="#6ee7b7" penwidth=1.5]
   po_backlog -> gate_qa [color="#22d3ee" penwidth=1.5 label="acceptance\ncriteria"]
@@ -278,7 +412,17 @@ digraph artifacts {
 ## Open Questions
 
 - What file format for each artifact? (markdown, JSON, YAML frontmatter)
-- Where do artifacts live? ($PRODUCT_HOME path structure)
-- How do artifacts version? (delta-based per OpenSpec, or full rewrites)
+- How do artifacts version? Per-skill decision; expect a mix of delta
+  (ADR-style append-only) and full rewrite depending on the artifact's
+  natural lifecycle. Design System Doc is a likely delta candidate;
+  Product Brief is a likely full-rewrite candidate.
 - Concurrency: multiple agents reading/writing shared artifacts
 - Which continuous artifacts need automated collection vs manual entry?
+- How does the Reference layer get pruned? Emergent reference artifacts
+  accumulate; some go stale. Need a staleness heuristic (file age,
+  referenced files still existing, explicit expiry in frontmatter).
+- When a pre-planned Reference artifact is missing, should the
+  orchestrator that depends on it fall through with built-in knowledge
+  or block until the reference is produced? Current answer: fall
+  through, degrade gracefully — Reference artifacts are optional
+  inputs, not required prerequisites.

@@ -19,15 +19,23 @@ Activities group by how long their outputs live:
 Artifacts that survive many execution cycles. Revised on pivots or major
 shifts. Every automated gate validates against these.
 
-| Concern       | Agent Role     | Artifacts                                    |
-|---------------|----------------|----------------------------------------------|
-| Product       | Product Owner  | Product brief, backlog, priorities, criteria  |
-| Architecture  | Architect      | Component map, ADRs, API contracts, models    |
-| Design System | Designer       | Visual standards, component patterns, DESIGN.md |
+| Concern          | Agent Role     | Artifacts                                    |
+|------------------|----------------|----------------------------------------------|
+| Product          | Product Owner  | Product brief, backlog, priorities, criteria  |
+| Architecture     | Architect      | Component map, ADRs, API contracts, models    |
+| Design System    | Designer       | Principles, voice, terminology, IA, interaction, visual language, surface conventions |
+| Product Identity | Designer       | Product name, naming philosophy, usage rules, validation record |
 
 All durable changes require **human approval**. Agents draft; CPTO
-challenges and approves. This is the foundation — if it drifts, all
-downstream gates validate against wrong standards.
+challenges and approves. These four concerns are the foundation — if
+any drifts, all downstream gates validate against wrong standards.
+
+Product Identity is a self-contained foundation, not a sub-concern of
+Design System. Its lifecycle (near-static, changes only on rebrand),
+consumers (PO, Designer, Dev, QA, docs, marketing — everyone who
+references the product by name), and validation concerns (trademark,
+domain, handle collision) are distinct from Design System's ongoing
+visual and interaction standards.
 
 ### Cyclic (per-feature heartbeat)
 
@@ -70,36 +78,36 @@ to specific features.
 
 | Role           | Activities | Share | Key responsibility                    |
 |----------------|-----------|-------|----------------------------------------|
-| Product Owner  | 4         | 20%   | What to build, scope, demo             |
-| Architect      | 4         | 20%   | System structure, tech debt, arch gate |
-| Designer       | 3         | 15%   | Design system, design gate, knowledge  |
-| Developer      | 5         | 25%   | Plan, implement, verify, merge, ops    |
-| QA / Reviewer  | 4         | 20%   | Product gate, QA gate, code review     |
+| Product Owner  | 4         | 19%   | What to build, scope, demo             |
+| Architect      | 4         | 19%   | System structure, tech debt, arch gate |
+| Designer       | 4         | 19%   | Identity, design system, design gate, knowledge |
+| Developer      | 5         | 24%   | Plan, implement, verify, merge, ops    |
+| QA / Reviewer  | 4         | 19%   | Product gate, QA gate, code review     |
 
 Key constraints:
 - No role exceeds 25% of activities
 - No role gates its own output (produce ≠ validate)
 - Gates read from durable artifacts maintained by domain owners
 
-## Human Approval Points (6 of 20 activities)
+## Human Approval Points (7 of 21 activities)
 
 The CPTO touches the process at two boundaries:
 
-**Durable artifacts (3):** Product, Architecture, Design System. Agents
-propose changes; human approves. These are the inputs that everything
-validates against.
+**Durable artifacts (4):** Product, Architecture, Design System,
+Product Identity. Agents propose changes; human approves. These are
+the inputs that everything validates against.
 
 **Outer perimeter (3):** Product Gate (before execution), Merge PR
 (before shipping), Demo & Announce (before external communication).
 These are the outputs that affect users and stakeholders.
 
-**Fully automated (14 of 20):** The entire inner cycle, QA gate, CI
+**Fully automated (14 of 21):** The entire inner cycle, QA gate, CI
 verification, and all continuous activities run without human
 intervention.
 
 ## Four Gates
 
-Each gate guards its durable concern:
+Each gate guards a durable concern:
 
 | Gate              | Guards against         | Owned by     | Type      |
 |-------------------|------------------------|--------------|-----------|
@@ -110,6 +118,17 @@ Each gate guards its durable concern:
 
 Gates can reject (loop back) or escalate (update durable artifacts when
 the standards themselves need revision).
+
+**Product Identity has no dedicated gate.** Naming consistency
+(correct capitalization, canonical short forms, forbidden variants,
+usage in marketing vs product contexts) is validated by the **QA
+Gate** as part of its terminology and scenario checks. The human
+CPTO approval when the Product Identity artifact is created or
+revised is the primary compliance check; the QA Gate catches drift
+during feature execution. Adding a fifth dedicated gate was
+considered and rejected for lightness — naming violations are the
+kind of thing a scenario or terminology check catches, and five
+gates would overload the inner cycle.
 
 ## Escalation Paths
 
@@ -177,6 +196,12 @@ digraph full_model {
     ]
     design_sys [
       label="Design System\n[Designer]\nHUMAN APPROVAL"
+      shape=box style="rounded,filled"
+      fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
+      penwidth=2
+    ]
+    identity [
+      label="Product Identity\n[Designer]\nHUMAN APPROVAL"
       shape=box style="rounded,filled"
       fillcolor="#7f1d1d" color="#fca5a5" fontcolor="#e2e8f0"
       penwidth=2
@@ -301,6 +326,7 @@ digraph full_model {
   cpto -> product [color="#fca5a5" penwidth=2 style=bold label="approve"]
   cpto -> arch [color="#fca5a5" penwidth=2 style=bold label="approve"]
   cpto -> design_sys [color="#fca5a5" penwidth=2 style=bold label="approve"]
+  cpto -> identity [color="#fca5a5" penwidth=2 style=bold label="approve"]
   cpto -> gate_product [color="#fca5a5" penwidth=2 style=bold label="approve\nscope"]
   cpto -> merge [color="#fca5a5" penwidth=2 style=bold label="approve\nmerge"]
   cpto -> demo [color="#fca5a5" penwidth=2 style=bold label="approve\nannouncement"]
@@ -363,6 +389,7 @@ digraph full_model {
 | Maintain product brief, backlog, priorities | Durable | Product Owner | Human approval |
 | Maintain architecture (ADRs, APIs, components) | Durable | Architect | Human approval |
 | Maintain design system (standards, patterns) | Durable | Designer | Human approval |
+| Maintain product identity and naming | Durable | Designer | Human approval |
 | Pick Feature from backlog | Outer | Product Owner | Auto |
 | Shape & Scope | Outer | Product Owner | Auto |
 | Product Gate | Outer | QA / Reviewer | Human approval |
@@ -388,3 +415,19 @@ digraph full_model {
 - What triggers durable artifact revisions outside of gate escalations?
 - How do multiple agents coordinate on shared artifacts concurrently?
 - What is the concrete cadence for continuous activities?
+- **Design Gate scope has broadened.** The Design System Doc now spans
+  seven content categories (principles, voice and tone, terminology,
+  information architecture, interaction patterns, visual language, and
+  surface conventions per declared product surface). The Design Gate
+  must route checks by category and by the surface(s) a given change
+  touches — GUI, CLI, API error voice, docs. This affects the eventual
+  `design-gate` skill design; the gate will be heavier than originally
+  anticipated when it was scoped as "validate against visual tokens."
+  See `squad-skills-architecture.md` for the design-family breakdown
+  and `squad-artifacts.md` for the expanded Design System Doc scope.
+- **Reference-layer artifacts** (see `squad-artifacts.md`) feed
+  decisions but are not gated. Does any gate need to check that its
+  durable artifact cited its Reference inputs? Currently no — the
+  human approval on the durable artifact implicitly covers the
+  references it cites. Worth revisiting if Reference artifacts start
+  carrying substantive decisions the durable doesn't re-capture.
