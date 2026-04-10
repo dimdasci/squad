@@ -87,15 +87,22 @@ echo ""
 echo "Test 3: Mermaid diagrams..."
 assert_contains "$RECORD_CONTENT" '```mermaid' "Contains mermaid code blocks" || exit 1
 
-# Test 4: Mermaid diagrams are valid (if mermaid-validator is available)
+# Test 4: Mermaid diagrams are valid via @mermaid-js/mermaid-cli
+# First run downloads headless Chromium (~400MB), cached after.
 echo ""
 echo "Test 4: Mermaid validation..."
 if command -v npx &> /dev/null; then
-    if npx mermaid-validator validate-md "$RECORD_PATH" --fail-fast 2>/dev/null; then
-        echo "  [PASS] Mermaid diagrams are valid"
+    MMDC_OUT=$(mktemp --suffix=.svg)
+    if mmdc_output=$(npx -y -p @mermaid-js/mermaid-cli mmdc -i "$RECORD_PATH" -o "$MMDC_OUT" 2>&1); then
+        echo "  [PASS] Mermaid diagrams rendered by mmdc"
     else
-        echo "  [FAIL] Mermaid validation failed"
+        echo "  [FAIL] mmdc rejected a diagram"
+        echo "$mmdc_output" | head -20 | sed 's/^/    /'
+        rm -f "$MMDC_OUT"
+        cleanup_test_project "$PROJECT_DIR"
+        exit 1
     fi
+    rm -f "$MMDC_OUT"
 else
     echo "  [SKIP] npx not available for mermaid validation"
 fi

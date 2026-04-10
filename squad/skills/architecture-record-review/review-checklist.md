@@ -8,11 +8,12 @@ reads this file during the review process.
 ### S1: C4 L1 diagram exists and is valid Mermaid
 
 **How to check:** Look for a mermaid code block in the "System Context"
-section. Run:
+section. Render every Mermaid block in the record with the official
+Mermaid CLI (first run downloads headless Chromium, cached after):
 ```bash
-npx mermaid-validator validate-md ${user_config.product_home}/architecture/record.md --fail-fast
+npx -y -p @mermaid-js/mermaid-cli mmdc -i ${user_config.product_home}/architecture/record.md -o /tmp/mermaid-check.svg
 ```
-**PASS if:** Command exits 0.
+**PASS if:** Command exits 0 (all blocks parsed and rendered).
 **FAIL if:** Command exits non-zero, or no mermaid block found in the
 System Context section.
 

@@ -1,7 +1,7 @@
 ---
 name: architecture-record
 description: Create or update the architecture record — component map (C4 L1+L2) and architectural decision records (ADRs). Use when starting technical design after an approved product brief, or when architecture needs revision.
-allowed-tools: WebSearch WebFetch Bash(npx mermaid-validator *)
+allowed-tools: WebSearch WebFetch Bash(npx -y -p @mermaid-js/mermaid-cli mmdc *)
 ---
 
 # Architecture Record
@@ -241,14 +241,16 @@ Brief: product/brief.md
 [Research summary with links]
 ```
 
-After writing, validate Mermaid diagrams:
+After writing, validate every Mermaid block by rendering it with the
+official Mermaid CLI (`@mermaid-js/mermaid-cli`). The first invocation
+downloads headless Chromium (~400 MB), cached for later runs:
 
 ```bash
-npx mermaid-validator validate-md ${user_config.product_home}/architecture/record.md --fail-fast
+npx -y -p @mermaid-js/mermaid-cli mmdc -i ${user_config.product_home}/architecture/record.md -o /tmp/mermaid-check.svg
 ```
 
-If validation fails, fix the diagram syntax and re-validate. Do not
-proceed with invalid diagrams.
+A non-zero exit code means at least one diagram failed to parse. Fix
+the diagram syntax and re-run. Do not proceed with invalid diagrams.
 
 See [record-guide.md](record-guide.md) for artifact template.
 
@@ -304,7 +306,8 @@ These rules prevent common failure modes:
 4. **Decomposition trigger** — if L2 exceeds 10 containers, split into
    overview + detail diagrams per logical group.
 5. **Deterministic validation** — always run
-   `npx mermaid-validator validate-md <file> --fail-fast` after writing.
+   `npx -y -p @mermaid-js/mermaid-cli mmdc -i <file> -o /tmp/mermaid-check.svg`
+   after writing. Non-zero exit means a diagram failed to parse.
 
 ## Chains To
 

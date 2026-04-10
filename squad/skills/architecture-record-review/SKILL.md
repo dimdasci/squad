@@ -2,7 +2,7 @@
 name: architecture-record-review
 description: Review an architecture record for structural completeness, architectural fitness, and alignment with the product brief. Runs in fresh context for unbiased assessment.
 context: fork
-allowed-tools: Bash(npx mermaid-validator *)
+allowed-tools: Bash(npx -y -p @mermaid-js/mermaid-cli mmdc *)
 ---
 
 # Architecture Record Review
@@ -33,7 +33,7 @@ for detailed pass criteria.
 
 | # | Check |
 |---|-------|
-| S1 | C4 L1 diagram exists and is valid Mermaid (run `npx mermaid-validator validate-md` on the file) |
+| S1 | C4 L1 diagram exists and is valid Mermaid (run `npx -y -p @mermaid-js/mermaid-cli mmdc -i <file> -o /tmp/mermaid-check.svg` on the record) |
 | S2 | C4 L1 shows system boundary and at least 1 external actor |
 | S3 | C4 L2 diagram exists and is valid Mermaid |
 | S4 | C4 L2 shows containers with short labels (3-4 words max) |

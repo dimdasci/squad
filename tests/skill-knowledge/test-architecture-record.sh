@@ -27,7 +27,7 @@ output=$(run_claude_knowledge "In the architecture-record skill, what are the ru
 
 assert_contains "$output" "label\|Label\|short\|word" "Mentions short labels" || exit 1
 assert_contains "$output" "style\|styling\|color\|CSS" "Mentions no styling" || exit 1
-assert_contains "$output" "valid\|validat\|mermaid-validator" "Mentions validation" || exit 1
+assert_contains "$output" "valid\|validat\|mmdc" "Mentions validation" || exit 1
 
 echo ""
 
