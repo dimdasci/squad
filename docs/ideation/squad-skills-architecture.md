@@ -387,24 +387,37 @@ Notes:
 
 Each skill embeds techniques from the methodology research
 (see `docs/ideation/squad-methodologies.md`). Pick the leanest
-technique per skill:
+technique per skill.
 
-| Skill | Primary Technique |
-|-------|------------------|
-| `product-brief` | MITRE 3-phase canvas + JTBD + Shape Up appetite |
-| `product-backlog` | Epic hypothesis + Given/When/Then + ICE scoring |
-| `architecture-record` | C4 Model L1+L2 + Nygard ADR |
-| `architecture-gate` | Fitness functions + boundary checklist |
-| `product-naming` | Classification framework (descriptive / suggestive / abstract / invented / founder / acronym) + phonetic and cross-linguistic checks + mandatory validation (domain WHOIS, trademark search via WIPO/USPTO/EUIPO, social and package handles, existing-product collision search) |
-| `design-research-references` | Three-layer synthesis: tried-and-true (category baseline) + trending (current discourse) + first-principles (deliberate departures). Peer-product landscape analysis. |
-| `design-research-audience` | JTBD-traced audience analysis + existing-convention inventory + accessibility needs mapping |
-| `design-research-standards` | WCAG level selection + platform HIG enumeration (Apple HIG, Material Design where applicable) + industry regulation review + CLI norms (clig.dev, POSIX) + API error voice conventions |
-| `design-system` | Orchestration of `product-naming` + `design-research-*` dependencies, then synthesis into a 7-category durable doc (principles, voice, terminology, IA, interaction, visual, surface conventions). Gstack DESIGN.md template as structural baseline for the visual-language category. SAFE/RISK framing for the creative proposal. |
-| `design-gate` | Confidence-tier checklist + WCAG essentials + per-surface routing (GUI, CLI, docs, API error voice) |
-| `qa-gate` | BDD scenarios + exploratory testing charters |
-| `delivery-record` | Delta changelog + narrative arc demo |
-| `knowledge-log` | Typed entries + staleness pruning |
-| `health-register` | DORA metrics + impact/effort debt scoring |
+The **Status** column reflects how much the methodology has been
+validated:
+
+- **Validated** — skill is shipped and tested; methodology proven
+  in practice.
+- **Designed** — spec exists with methodology grounded in research;
+  implementation pending.
+- **Hypothesis** — pre-spec working notes; expect material changes
+  when the skill is actually designed. The brainstorm-and-research
+  process may invalidate or replace these techniques entirely. Do
+  not treat hypothesis-status methodologies as authoritative — they
+  are placeholders to be revisited per skill.
+
+| Skill | Status | Primary Technique |
+|-------|--------|------------------|
+| `product-brief` | Validated | MITRE 3-phase canvas + JTBD + Shape Up appetite |
+| `product-backlog` | Hypothesis | Epic hypothesis + Given/When/Then + ICE scoring |
+| `architecture-record` | Validated | C4 Model L1+L2 + Nygard ADR |
+| `architecture-gate` | Hypothesis | Fitness functions + boundary checklist |
+| `product-naming` | Designed | Igor 4-category taxonomy (functional / invented / experiential / evocative) + Watkins SMILE/SCRATCH rubric + Meyerson 7-stage pipeline + parallel subagent generation (4 differentiated lenses, Lexicon decoy-brief analogue) |
+| `design-research-references` | Hypothesis | Three-layer synthesis: tried-and-true (category baseline) + trending (current discourse) + first-principles (deliberate departures). Peer-product landscape analysis. |
+| `design-research-audience` | Hypothesis | JTBD-traced audience analysis + existing-convention inventory + accessibility needs mapping |
+| `design-research-standards` | Hypothesis | WCAG level selection + platform HIG enumeration (Apple HIG, Material Design where applicable) + industry regulation review + CLI norms (clig.dev, POSIX) + API error voice conventions |
+| `design-system` | Hypothesis | Orchestration of `product-naming` + `design-research-*` dependencies, then synthesis into a 7-category durable doc (principles, voice, terminology, IA, interaction, visual, surface conventions). Gstack DESIGN.md template as structural baseline for the visual-language category. SAFE/RISK framing for the creative proposal. |
+| `design-gate` | Hypothesis | Confidence-tier checklist + WCAG essentials + per-surface routing (GUI, CLI, docs, API error voice) |
+| `qa-gate` | Hypothesis | BDD scenarios + exploratory testing charters |
+| `delivery-record` | Hypothesis | Delta changelog + narrative arc demo |
+| `knowledge-log` | Hypothesis | Typed entries + staleness pruning |
+| `health-register` | Hypothesis | DORA metrics + impact/effort debt scoring |
 
 ## Testing (validated by product-brief tests)
 

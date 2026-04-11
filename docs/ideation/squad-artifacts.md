@@ -82,9 +82,15 @@ system: naming philosophy (why this name, what it expresses),
 approved short forms and nicknames, forbidden misspellings, how the
 name appears in sentences (capitalization, pronunciation,
 stylization rules), what the product is NOT called, usage rules for
-product contexts vs marketing materials, and the full validation
-record (domain availability, trademark search results, social and
-package handle availability, existing-product collision check).
+product contexts vs marketing materials, and the validation record.
+The validation record covers three automated filters (linguistic /
+phonetic SCRATCH check, well-known brand collision search, primary
+TLD active-site probe) and the optional human-run trademark check
+across USPTO / WIPO / EUIPO. See
+`docs/superpowers/specs/2026-04-11-product-naming-design.md` for
+the full validation scope and rationale for what was excluded
+(social and package handle availability were considered and cut as
+noisy / non-discriminative).
 
 Product Identity is a **separate foundation**, not a sub-concern of
 Design System. The name has broader consumers (PO, Designer, Dev,
