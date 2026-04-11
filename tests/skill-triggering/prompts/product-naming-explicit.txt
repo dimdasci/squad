@@ -1,0 +1,1 @@
+Help me name my product. I have an approved product brief at product/brief.md but no chosen name yet. Use the product-naming skill.
