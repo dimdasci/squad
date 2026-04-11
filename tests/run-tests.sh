@@ -25,7 +25,8 @@ fi
 # Parse arguments
 VERBOSE=false
 SPECIFIC_TEST=""
-TIMEOUT=600
+TIMEOUT=""
+TIMEOUT_EXPLICIT=false
 TIER="all"
 
 while [[ $# -gt 0 ]]; do
@@ -40,6 +41,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --timeout)
             TIMEOUT="$2"
+            TIMEOUT_EXPLICIT=true
             shift 2
             ;;
         --tier)
@@ -52,7 +54,7 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  --verbose, -v        Show verbose output"
             echo "  --test, -t NAME      Run only the specified test file"
-            echo "  --timeout SECONDS    Set timeout per test (default: 300)"
+            echo "  --timeout SECONDS    Set timeout per test (default: 600 fast tier, 1500 execution tier)"
             echo "  --tier TIER          Run specific tier: knowledge, triggering, execution, all (default: all)"
             echo "  --help, -h           Show this help"
             echo ""
@@ -70,6 +72,18 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Default timeout depends on tier: execution tests can run up to ~15 min
+# internally (run_claude_json budget = 900s in the current scripts), so
+# the outer wrapper needs at least that + overhead. Fast tier batches
+# cap around 6-7 min.
+if [ "$TIMEOUT_EXPLICIT" = false ]; then
+    if [ "$TIER" = "execution" ]; then
+        TIMEOUT=1500
+    else
+        TIMEOUT=600
+    fi
+fi
 
 # Collect tests to run
 tests=()
