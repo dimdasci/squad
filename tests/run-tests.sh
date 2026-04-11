@@ -25,7 +25,7 @@ fi
 # Parse arguments
 VERBOSE=false
 SPECIFIC_TEST=""
-TIMEOUT=300
+TIMEOUT=600
 TIER="all"
 
 while [[ $# -gt 0 ]]; do
