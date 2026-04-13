@@ -35,11 +35,11 @@ You MUST create a task for each item and complete them in order:
 1. **Read existing context** — check approved brief, existing naming artifact, invocation mode (greenfield / rebrand / orchestrated)
 2. **Positioning brief** — extract from product brief and confirm with CPTO
 3. **Generate candidate pool** — dispatch 4 parallel subagents with differentiated lenses, dedupe to a working pool
-4. **Automated filter pass** — apply 3 filters in cheapest-first order
+4. **Automated filter pass** — apply 2 filters in cheapest-first order
 5. **SMILE/SCRATCH ranking** — rank survivors, take top 12
 6. **Present shortlist (CPTO Gate 1)** — CPTO picks 3–5 finalists
 7. **Trademark search handoff** — optional helper, CPTO reports back
-8. **Brand viability writeup** — per-finalist note
+8. **Brand viability writeup + domain availability** — per-finalist note + domain grid (DoH on finalists)
 9. **Present finalists (CPTO Gate 2)** — Claude leans with dimensional grounding; CPTO picks winner
 10. **Write naming.md** — full validation record, status "draft"
 11. **Independent review** — invoke `squad:product-naming-review` (fresh context fork)
