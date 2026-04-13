@@ -204,7 +204,7 @@ Record as ✓ / ✗ / ? respectively in the grid.
 Hardcoded in the skill. Revisit if a future skill needs a different
 set.
 
-### Why DoH, not RDAP + WebFetch
+### Why DoH, not RDAP via WebFetch
 
 The earlier mechanism called `WebFetch https://rdap.verisign.com/com/v1/domain/<name>`.
 RDAP returns HTTP 404 as the positive "domain available" signal, but
