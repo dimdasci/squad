@@ -420,8 +420,12 @@ positioning, what the CPTO is staking on it. 1–3 paragraphs.]
 | Filter | Result | Notes |
 |---|---|---|
 | Linguistic / phonetic (SCRATCH) | PASS | [brief note] |
-| Brand collision search | PASS | [search query, page-one summary] |
-| Primary TLD probe | [available / buyable / active] | [details] |
+| Brand collision search | PASS | [verdict pattern: scattered / concentrated + query used] |
+
+### Domain availability (finalists × TLDs)
+| Finalist | .com | .io | .ai | .app | .co | .dev | .so |
+|---|---|---|---|---|---|---|---|
+| [Name1] | ✓ | ✗ | ... |
 
 ### Trademark (human-run, optional)
 | Jurisdiction | Result | Notes |
