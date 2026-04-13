@@ -1,7 +1,7 @@
 ---
 name: product-naming
 description: Produce or revise the product naming artifact — the chosen product name plus its supporting system (philosophy, usage rules, forbidden variants, validation record). Use when a product brief is approved and no name exists yet, when rebranding an existing product, or when invoked as a dependency by squad:design-system.
-allowed-tools: Task WebSearch WebFetch Bash(sh /tmp/naming-dedup.sh)
+allowed-tools: Task WebSearch Bash(sh /tmp/naming-dedup.sh) Bash(curl -s 'https://dns.google/resolve?*')
 ---
 
 # Product Naming
