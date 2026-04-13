@@ -111,12 +111,14 @@ assert_contains "$NAMING_CONTENT" "How it appears in sentences\|in sentences" "H
 assert_contains "$NAMING_CONTENT" "NOT called" "Has not-called section" || exit 1
 assert_contains "$NAMING_CONTENT" "Context-specific\|Marketing:\|Product UI:" "Has context-specific usage" || exit 1
 
-# Test 7: Has validation record with all 3 filters
+# Test 7: Has validation record with both filters and domain grid
 echo ""
-echo "Test 7: Validation record — automated filters..."
+echo "Test 7: Validation record — automated filters + domain grid..."
 assert_contains "$NAMING_CONTENT" "Linguistic\|phonetic\|SCRATCH" "Filter 1 recorded" || exit 1
 assert_contains "$NAMING_CONTENT" "Brand collision\|collision" "Filter 2 recorded" || exit 1
-assert_contains "$NAMING_CONTENT" "TLD\|domain" "Filter 3 recorded" || exit 1
+assert_contains "$NAMING_CONTENT" "Domain availability" "Domain grid section present" || exit 1
+assert_contains "$NAMING_CONTENT" ".com" "Grid shows .com column" || exit 1
+assert_contains "$NAMING_CONTENT" ".io" "Grid shows .io column" || exit 1
 
 # Test 8: Has trademark table with 3 jurisdictions
 echo ""
