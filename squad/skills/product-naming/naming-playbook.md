@@ -179,33 +179,54 @@ is the protagonist; the product is the prop. Avoid functional
 descriptions of the product itself.
 ```
 
-## Filter 3 implementation notes
+## Domain availability implementation notes
 
-For each Filter-2 survivor, run two WebFetch calls:
+Domain availability runs in **Step 8 (post-Gate-1)** on finalists, not
+as a pre-Gate-1 filter. It replaces the Filter 3 RDAP + HTTPS WebFetch
+probe, which was removed in the 2026-04-13 cost-simplification pass.
 
-1. **RDAP query** — `https://rdap.verisign.com/com/v1/domain/<name>`
-   - 404 → available
-   - 200 → registered, parse the JSON for status flags
-2. **HTTPS probe** — `https://<name>.com`
-   - Connection refused / DNS failure → available (no DNS record)
-   - Returns HTML → check for parking patterns
+For each `(finalist, tld)` pair, use Bash `curl` against Google DoH:
 
-**Parking patterns to detect** (case-insensitive substring match):
+```bash
+curl -s 'https://dns.google/resolve?name=<name>.<tld>&type=NS'
+```
 
-- `for sale`
-- `domain is for sale`
-- `buy this domain`
-- `afternic`
-- `sedo`
-- `dan.com`
-- `godaddy auctions`
-- `bodis.com`
-- `parkingcrew`
+Parse the JSON response's `Status` field:
 
-If the page returns HTML and contains none of these patterns and looks
-like a real site (has navigation, paragraphs, brand identity), classify
-as `active site` and eliminate. When ambiguous, classify as
-`kept, verify manually`.
+- `{"Status":3,...}` (NXDOMAIN) → **available** — domain not in DNS
+- `{"Status":0,"Answer":[...]}` → **registered** — NS records exist
+- `{"Status":0,...}` without `Answer` → **ambiguous** — rare; usually
+  a registered-but-undelegated domain
+
+Record as ✓ / ✗ / ? respectively in the grid.
+
+**TLD set (fixed):** `.com, .io, .ai, .app, .co, .dev, .so`.
+Hardcoded in the skill. Revisit if a future skill needs a different
+set.
+
+### Why DoH, not RDAP + WebFetch
+
+The earlier mechanism called `WebFetch https://rdap.verisign.com/com/v1/domain/<name>`.
+RDAP returns HTTP 404 as the positive "domain available" signal, but
+WebFetch throws on 404 rather than returning the response. Every
+available domain surfaced as a tool error — the mechanism failed in
+the direction it was meant to celebrate. DoH always returns HTTP 200
+with a JSON status code, so no tool-level errors, and the signal is
+directly in the response body.
+
+### Why no HTTPS probe (parked vs active)
+
+The earlier mechanism also fetched `https://<name>.com` to distinguish
+parked from active domains by scanning for parking markers ("for sale",
+"sedo", etc.). That required fetching arbitrary candidate-controlled
+sites. Candidate names come from a generative process, so any name
+could map to an adversarial domain serving prompt-injection payloads,
+pathological responses, or tracking pixels aimed at the model session.
+
+We dropped the parked-vs-active distinction along with the risk.
+"Available vs registered" is sufficient signal for the artifact; if the
+CPTO wants to buy a parked domain, they check manually via the grid
+showing registered TLDs.
 
 ## When pools are tight
 
