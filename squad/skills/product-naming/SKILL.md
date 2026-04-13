@@ -284,9 +284,43 @@ honestly. If all finalists hit `conflict`, loop back to Gate 1 — CPTO
 chooses: reopen shortlist, regenerate pool, or escalate. Never silently
 fall through.
 
-### 8. Brand viability writeup
+### 8. Brand viability writeup + domain availability
 
-For each advancing finalist, write a short note to the conversation:
+Three sub-steps: per-finalist domain check, grid presentation, per-finalist note.
+
+**8a — Domain availability (DoH).** For each advancing finalist, run a
+DNS-over-HTTPS NS lookup across the fixed TLD set
+`.com, .io, .ai, .app, .co, .dev, .so`:
+
+```bash
+curl -s 'https://dns.google/resolve?name=<finalist>.<tld>&type=NS'
+```
+
+One call per (finalist, tld) pair. For 3–5 finalists × 7 TLDs, that's
+21–35 curl invocations total.
+
+Parse the JSON response's `Status` field:
+- `Status: 3` (NXDOMAIN) → **available** (record ✓)
+- `Status: 0` with `Answer` array of NS records → **registered** (record ✗)
+- `Status: 0` without `Answer` → **ambiguous** (record ?) — rare
+
+See [naming-playbook.md](naming-playbook.md) → "Domain availability
+implementation notes" for rationale (why DoH, why no HTTPS probe).
+
+**8b — Domain availability grid.** Show the grid to CPTO before Gate 2
+so cross-finalist tradeoffs are visible in one glance:
+
+```markdown
+## Domain availability
+
+| Finalist | .com | .io | .ai | .app | .co | .dev | .so |
+|---|---|---|---|---|---|---|---|
+| [Name1] | ✓ | ✗ | ... |
+| [Name2] | ... |
+```
+
+**8c — Per-finalist brand viability note.** For each advancing finalist,
+write a short note to the conversation:
 
 ```markdown
 ### [Name] — [category]
@@ -295,9 +329,11 @@ For each advancing finalist, write a short note to the conversation:
 **SMILE strengths:** [strongest dimensions]
 **SMILE weaknesses:** [any scoring <1, honest]
 **Linguistic notes:** [pronunciation, syllable count, stress]
-**Primary web presence:** [.com status from Filter 3]
-**Trademark result:** [verbatim per jurisdiction]
-**Known risks:** [phonetic overlap, buyable domain cost, etc.]
+**Brand collision:** [verdict pattern from Filter 2 — scattered /
+adjacent-hit noted / eliminated]
+**Domain paths:** [available TLDs from the grid]
+**Trademark result:** [verbatim per jurisdiction from Step 7]
+**Known risks:** [phonetic overlap, trademark-ambiguous, thin TLD set, etc.]
 ```
 
 ### 9. Present finalists (CPTO Gate 2)
