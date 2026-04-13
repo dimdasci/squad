@@ -225,7 +225,7 @@ eliminate on brand-shaped hits outside the product's category.
 
 ### 5. SMILE/SCRATCH ranking
 
-For each Filter-3 survivor, score against the SMILE rubric:
+For each Filter-2 survivor, score against the SMILE rubric:
 
 - **Suggestive** (evokes brand) — 0–2
 - **Meaningful** (resonates with target users) — 0–2
@@ -248,7 +248,7 @@ Write a shortlist table to the conversation:
 ```markdown
 | Name | Category | Lens(es) | SMILE | Positioning fit | Filter notes |
 |---|---|---|---|---|---|
-| ... | evocative | 2,4 | 8/10 | strong | .com available; no collision |
+| ... | evocative | 2,4 | 8/10 | strong | no collision (scattered) |
 ```
 
 CPTO options:
@@ -296,6 +296,12 @@ DNS-over-HTTPS NS lookup across the fixed TLD set
 curl -s 'https://dns.google/resolve?name=<finalist>.<tld>&type=NS'
 ```
 
+Concrete example (`acme` finalist, `.com` TLD):
+
+```bash
+curl -s 'https://dns.google/resolve?name=acme.com&type=NS'
+```
+
 One call per (finalist, tld) pair. For 3–5 finalists × 7 TLDs, that's
 21–35 curl invocations total.
 
@@ -315,8 +321,8 @@ so cross-finalist tradeoffs are visible in one glance:
 
 | Finalist | .com | .io | .ai | .app | .co | .dev | .so |
 |---|---|---|---|---|---|---|---|
-| [Name1] | ✓ | ✗ | ... |
-| [Name2] | ... |
+| Acme    | ✗ | ✓ | ✓ | ✗ | ✓ | ✓ | ? |
+| Beacon  | ... |
 ```
 
 **8c — Per-finalist brand viability note.** For each advancing finalist,
@@ -331,7 +337,7 @@ write a short note to the conversation:
 **Linguistic notes:** [pronunciation, syllable count, stress]
 **Brand collision:** [verdict pattern from Filter 2 — scattered /
 adjacent-hit noted / eliminated]
-**Domain paths:** [available TLDs from the grid]
+**Domain paths:** [summary of available TLDs — e.g., ".com taken, .io/.ai/.dev available"]
 **Trademark result:** [verbatim per jurisdiction from Step 7]
 **Known risks:** [phonetic overlap, trademark-ambiguous, thin TLD set, etc.]
 ```
