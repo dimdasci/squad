@@ -273,9 +273,10 @@ Prompt: "These are the three public registries. Trademark is the only
 legal hard-stop check, but it's optional — skip entirely or check any
 subset. Report back per finalist: clear / conflict / ambiguous / skipped."
 
-These registry URLs are JS SPAs behind bot protection; pre-filled
-queries don't work and there is no programmatic path that handles them.
-Hand URLs to CPTO, accept whatever they report.
+Do not attempt to fetch or script against these URLs — they are JS
+SPAs behind bot protection, pre-filled queries don't work, and there
+is no programmatic path that handles them. Hand URLs to CPTO, accept
+whatever they report.
 
 Any finalist `conflict` in any jurisdiction drops from the advancing
 set. `clear`, `ambiguous`, `skipped` advance with state recorded
