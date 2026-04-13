@@ -54,11 +54,15 @@ Read `${user_config.product_home}/identity/naming.md`. Check that:
    - How it appears in sentences
    - What this product is NOT called
    - Context-specific usage
-5. **Validation record:** all 3 automated filters populated with a
-   result and notes
-6. **Trademark table:** all 3 jurisdictions present (USPTO, WIPO,
+5. **Validation record:** both automated filters populated with a
+   result and notes (Linguistic / phonetic SCRATCH, Brand collision
+   search)
+6. **Domain availability grid:** a `Domain availability (finalists × TLDs)`
+   section is present; it has a row per finalist and a cell per TLD
+   (✓ / ✗ / ?); cells populated for every (finalist, TLD) pair
+7. **Trademark table:** all 3 jurisdictions present (USPTO, WIPO,
    EUIPO) with a result (including `skipped`)
-7. **Generation context:** pool size, lens 2 adjacent domain,
+8. **Generation context:** pool size, lens 2 adjacent domain,
    cross-lens hit, reruns
 
 If any required section is missing or empty, record as a structural
@@ -68,8 +72,9 @@ finding.
 
 1. **No silent relabeling.** If the trademark check was skipped for
    any jurisdiction, the artifact must say `skipped`, not `clear`.
-2. **Filter results match claims.** If the artifact says "Primary TLD
-   probe: available", the notes column should not contradict it.
+2. **Filter results match claims.** The Brand collision search row's
+   Result column (PASS/ELIMINATED) should match the Notes column's
+   verdict pattern description; no contradiction.
 3. **Chosen name not in forbidden variants.** The chosen name (any
    capitalization) must not appear in the forbidden variants list.
 4. **No conflict between short forms and forbidden variants.** No
@@ -77,9 +82,11 @@ finding.
 5. **Stylization rule consistent.** Context-specific usage examples
    must follow the stylization rule (e.g., if the rule says
    "Trabajador, never TRABAJADOR", no example uses TRABAJADOR).
-6. **Active TLD handled.** If `Primary TLD probe` shows `active`, the
-   philosophy or usage rules must note the alternate TLD strategy or
-   explain why the chosen name still works.
+6. **Chosen TLD path exists.** The chosen name must have at least one
+   ✓ (available) cell in the domain availability grid, OR the
+   philosophy / usage rules must explain which already-registered TLD
+   the CPTO intends to acquire (and why the chosen name still works
+   without an available path).
 
 ### Pass 3: Philosophy-to-evidence alignment
 
