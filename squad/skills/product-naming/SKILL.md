@@ -61,7 +61,7 @@ digraph product_naming {
     positioning [label="Positioning brief\n(extract + confirm)"]
     generate [label="Generate pool\n4 parallel subagents"]
     dedupe [label="Dedupe via bash"]
-    filters [label="3 filters\nlinguistic / collision / TLD"]
+    filters [label="2 filters\nlinguistic / collision"]
     rank [label="SMILE rank\ntop 12"]
     gate1 [label="Gate 1: Shortlist\nCPTO picks 3-5", shape=diamond]
   }
@@ -70,7 +70,7 @@ digraph product_naming {
     label="Stage 2: Finalists to Chosen Name"
     style=dashed
     trademark [label="Trademark helper\noptional, CPTO reports"]
-    writeup [label="Brand viability\nper-finalist"]
+    writeup [label="Brand viability\n+ domain grid\n(DoH on finalists)"]
     gate2 [label="Gate 2: Final pick\nCPTO chooses", shape=diamond]
     write [label="Write naming.md\nstatus draft"]
   }
