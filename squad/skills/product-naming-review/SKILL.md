@@ -59,7 +59,9 @@ Read `${user_config.product_home}/identity/naming.md`. Check that:
    search)
 6. **Domain availability grid:** a `Domain availability (finalists × TLDs)`
    section is present; it has a row per finalist and a cell per TLD
-   (✓ / ✗ / ?); cells populated for every (finalist, TLD) pair
+   with one of `✓` / `✗` / `?` in every cell. A `?` counts as populated
+   (the grid records the ambiguous verdict); only a blank or missing
+   cell is a structural finding
 7. **Trademark table:** all 3 jurisdictions present (USPTO, WIPO,
    EUIPO) with a result (including `skipped`)
 8. **Generation context:** pool size, lens 2 adjacent domain,
@@ -84,9 +86,11 @@ finding.
    "Trabajador, never TRABAJADOR", no example uses TRABAJADOR).
 6. **Chosen TLD path exists.** The chosen name must have at least one
    ✓ (available) cell in the domain availability grid, OR the
-   philosophy / usage rules must explain which already-registered TLD
-   the CPTO intends to acquire (and why the chosen name still works
-   without an available path).
+   philosophy / usage rules must (a) name a specific already-registered
+   TLD by suffix (e.g., `.com`, `.io`) and (b) state an acquisition
+   plan or rationale for why the chosen name still works without an
+   available path. A generic "we'll figure out a domain later" does
+   not satisfy this check.
 
 ### Pass 3: Philosophy-to-evidence alignment
 
