@@ -194,8 +194,10 @@ each survivor carries source-lens attribution; cross-lens hits preserved.
 
 ### 4. Automated filter pass
 
-Three filters, cheapest-first. Each candidate tagged `eliminated` or
-`kept` with reason recorded internally.
+Two filters, cheapest-first. Each candidate tagged `eliminated` or
+`kept` with reason recorded internally. (Filter 3 — domain probe —
+moved to Step 8 in the 2026-04-13 cost-simplification pass and now
+runs post-Gate-1 on finalists only.)
 
 **Filter 1 — Linguistic / phonetic (Claude reasoning, no tool calls).**
 Evaluate each candidate against target languages from positioning.
@@ -204,25 +206,22 @@ Eliminate any that fails a hard SCRATCH criterion
 First because free and highest-discriminative.
 
 **Filter 2 — Well-known brand collision (1 WebSearch per Filter-1
-survivor).** Query: `"<name>" <category>`. If page-one results include
-a recognizable brand in the category or adjacent category, eliminate.
-Bar is "recognizable", not "exists somewhere".
+survivor).** Query: `"<name>" <category>`. Read the **result
+distribution pattern**, not individual hits:
 
-**Filter 3 — Primary TLD probe (1 RDAP + 1 HTTPS per Filter-2
-survivor).**
+- **Concentrated on one brand's domains in the same category** (e.g.,
+  most first-page hits on `*.examplebrand.com` with an in-category
+  product — the "Garmin time tracker" pattern) → **eliminate**.
+  Record: dominant brand, domain, one-line evidence.
+- **Scattered across unrelated domains** (no single brand dominates
+  the target category) → **pass**.
+- **Mixed: mostly scattered, with one or two adjacent-category hits**
+  (e.g., a same-name product in an adjacent but non-competing space) →
+  **pass**, note the adjacent hit in the validation record for CPTO
+  awareness.
 
-- WebFetch `https://rdap.verisign.com/com/v1/domain/<name>` — Verisign
-  RDAP for `.com`, returns structured JSON
-- WebFetch `https://<name>.com` — HTTPS probe
-
-Classify:
-- **Available** (RDAP 404) → kept, strong positive
-- **Parked / for-sale** (registered, HTTPS has parking markers: "for
-  sale", "afternic", "sedo", GoDaddy) → kept, noted as buyable
-- **Active site** (registered, HTTPS returns a real site) → eliminated,
-  record site title if detectable
-
-When ambiguous, default to `kept, verify manually` — loose safer than strict.
+Pass bar: **no explicit conflict on product name + category.** Do not
+eliminate on brand-shaped hits outside the product's category.
 
 ### 5. SMILE/SCRATCH ranking
 
@@ -274,8 +273,9 @@ Prompt: "These are the three public registries. Trademark is the only
 legal hard-stop check, but it's optional — skip entirely or check any
 subset. Report back per finalist: clear / conflict / ambiguous / skipped."
 
-Do NOT WebFetch these URLs — JS SPAs behind bot protection, pre-filled
-queries don't work. Hand URLs to CPTO, accept whatever they report.
+These registry URLs are JS SPAs behind bot protection; pre-filled
+queries don't work and there is no programmatic path that handles them.
+Hand URLs to CPTO, accept whatever they report.
 
 Any finalist `conflict` in any jurisdiction drops from the advancing
 set. `clear`, `ambiguous`, `skipped` advance with state recorded
