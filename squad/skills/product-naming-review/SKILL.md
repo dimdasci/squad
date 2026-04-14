@@ -21,8 +21,7 @@ populated, and there are no internal contradictions.
 - Required sections present and non-empty
 - Validation record is honest (skipped is recorded as skipped, not
   silently relabeled as clear)
-- No internal contradictions (chosen name not in forbidden variants,
-  approved short forms don't conflict with forbidden variants)
+- No internal contradictions (chosen name not in forbidden variants)
 - Philosophy connects to the brief's positioning
 
 ## What you do NOT check
@@ -48,8 +47,7 @@ Read `${user_config.product_home}/identity/naming.md`. Check that:
 2. **Chosen name section:** name, category (one of functional /
    invented / experiential / evocative), pronunciation, stylization
 3. **Philosophy section:** non-empty, at least one paragraph
-4. **Usage rules:** all 5 subsections populated:
-   - Approved short forms and nicknames
+4. **Usage rules:** all 4 subsections populated:
    - Forbidden variants
    - How it appears in sentences
    - What this product is NOT called
@@ -62,8 +60,8 @@ Read `${user_config.product_home}/identity/naming.md`. Check that:
    with one of `✓` / `✗` / `?` in every cell. A `?` counts as populated
    (the grid records the ambiguous verdict); only a blank or missing
    cell is a structural finding
-7. **Trademark table:** all 3 jurisdictions present (USPTO, WIPO,
-   EUIPO) with a result (including `skipped`)
+7. **Trademark table:** both jurisdictions present (USPTO, WIPO) with
+   a result (including `skipped`)
 8. **Generation context:** pool size, lens 2 adjacent domain,
    cross-lens hit, reruns
 
@@ -79,12 +77,10 @@ finding.
    verdict pattern description; no contradiction.
 3. **Chosen name not in forbidden variants.** The chosen name (any
    capitalization) must not appear in the forbidden variants list.
-4. **No conflict between short forms and forbidden variants.** No
-   approved short form should appear in the forbidden variants list.
-5. **Stylization rule consistent.** Context-specific usage examples
+4. **Stylization rule consistent.** Context-specific usage examples
    must follow the stylization rule (e.g., if the rule says
    "Trabajador, never TRABAJADOR", no example uses TRABAJADOR).
-6. **Chosen TLD path exists.** The chosen name must have at least one
+5. **Chosen TLD path exists.** The chosen name must have at least one
    ✓ (available) cell in the domain availability grid, OR the
    philosophy / usage rules must (a) name a specific already-registered
    TLD by suffix (e.g., `.com`, `.io`) and (b) state an acquisition

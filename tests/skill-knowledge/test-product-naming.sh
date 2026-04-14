@@ -46,7 +46,7 @@ echo "Test 4: Trademark check is optional..."
 output=$(run_claude_knowledge "In the product-naming skill, is the trademark check mandatory? What does the skill do for trademark validation?" 60)
 
 assert_contains "$output" "optional\|not mandatory\|skip\|may.*skip" "Mentions trademark is optional" || exit 1
-assert_contains "$output" "USPTO\|WIPO\|EUIPO\|registry\|registries" "Mentions trademark registries" || exit 1
+assert_contains "$output" "USPTO\|WIPO\|registry\|registries" "Mentions trademark registries" || exit 1
 assert_contains "$output" "human\|user\|CPTO\|manual" "Mentions human-run not automated" || exit 1
 
 echo ""

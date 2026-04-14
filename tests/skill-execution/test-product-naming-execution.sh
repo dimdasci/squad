@@ -102,10 +102,9 @@ echo ""
 echo "Test 5: Philosophy section..."
 assert_contains "$NAMING_CONTENT" "## Philosophy" "Has philosophy section" || exit 1
 
-# Test 6: Has all 5 usage rules subsections
+# Test 6: Has all 4 usage rules subsections
 echo ""
 echo "Test 6: Usage rules subsections..."
-assert_contains "$NAMING_CONTENT" "Approved short forms\|short forms" "Has approved short forms" || exit 1
 assert_contains "$NAMING_CONTENT" "Forbidden variants" "Has forbidden variants" || exit 1
 assert_contains "$NAMING_CONTENT" "How it appears in sentences\|in sentences" "Has sentence usage" || exit 1
 assert_contains "$NAMING_CONTENT" "NOT called" "Has not-called section" || exit 1
@@ -120,12 +119,11 @@ assert_contains "$NAMING_CONTENT" "Domain availability" "Domain grid section pre
 assert_contains "$NAMING_CONTENT" ".com" "Grid shows .com column" || exit 1
 assert_contains "$NAMING_CONTENT" ".io" "Grid shows .io column" || exit 1
 
-# Test 8: Has trademark table with 3 jurisdictions
+# Test 8: Has trademark table with 2 jurisdictions
 echo ""
 echo "Test 8: Trademark table..."
 assert_contains "$NAMING_CONTENT" "USPTO" "USPTO row present" || exit 1
 assert_contains "$NAMING_CONTENT" "WIPO" "WIPO row present" || exit 1
-assert_contains "$NAMING_CONTENT" "EUIPO" "EUIPO row present" || exit 1
 assert_contains "$NAMING_CONTENT" "skipped" "Skipped state recorded honestly" || exit 1
 
 # Test 9: Has generation context

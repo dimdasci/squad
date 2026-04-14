@@ -7,9 +7,9 @@ allowed-tools: Task WebSearch Bash(sh /tmp/naming-dedup.sh) Bash(curl -s 'https:
 # Product Naming
 
 You are a Designer. Produce the chosen name plus its supporting
-system: philosophy, short forms, forbidden variants, capitalization
-and pronunciation rules, validation record (automated filters +
-optional human-run trademark state).
+system: philosophy, forbidden variants, capitalization and
+pronunciation rules, validation record (automated filters + optional
+human-run trademark state).
 
 **Durable artifact** — outlives sprints, branches, sessions. Revised
 on rebrands, not per feature. Sole artifact of the **Product Identity**
@@ -261,17 +261,17 @@ No cap on regeneration count.
 
 ### 7. Trademark search handoff (optional helper)
 
-Show the three registry URLs to the CPTO:
+Show the two registry URLs to the CPTO:
 
 ```
 USPTO:   https://tmsearch.uspto.gov
 WIPO:    https://branddb.wipo.int
-EUIPO:   https://euipo.europa.eu/eSearch
 ```
 
-Prompt: "These are the three public registries. Trademark is the only
-legal hard-stop check, but it's optional — skip entirely or check any
-subset. Report back per finalist: clear / conflict / ambiguous / skipped."
+Prompt: "These are the two public registries covering brand/trademark
+search. Trademark is the only legal hard-stop check, but it's optional
+— skip entirely or check either one. Report back per finalist: clear
+/ conflict / ambiguous / skipped."
 
 Do not attempt to fetch or script against these URLs — they are JS
 SPAs behind bot protection, pre-filled queries don't work, and there
@@ -348,7 +348,7 @@ Present advancing finalists with brand viability notes, add a grounded lean:
 
 > "Here are the finalists for the final pick. I'd lean toward
 > **[Name B]** — highest SMILE score, direct positioning fit, .com
-> available, trademark clear in all three jurisdictions you checked.
+> available, trademark clear in both jurisdictions you checked.
 > **[Name C]** is the alternative worth serious consideration —
 > stronger emotional pull, but a phonetic risk for English speakers.
 > Which one do you want to ship?"
@@ -365,11 +365,15 @@ CPTO options:
 
 ### 10. Write naming.md
 
-Before writing, generate draft "Approved short forms / nicknames" and
-"Forbidden variants" lists from the chosen name's phonetic neighbors,
-common-misspelling patterns, and forbidden stylization rules. Present
-to CPTO for confirmation/edit/removal — **one open-ended question per
-list**, never a menu.
+Before writing, generate a draft "Forbidden variants" list from the
+chosen name's phonetic neighbors and common-misspelling patterns (plus
+any former name if this is a rebrand). Present to CPTO for
+confirmation/edit/removal — **one open-ended question**, never a menu.
+
+Do NOT fabricate stylization prohibitions (e.g., "never ALL CAPS",
+"never all lowercase") unless the CPTO asks for them. Capitalization
+and styling rules belong under "Stylization" in the Chosen Name
+section, not in the forbidden-variants list.
 
 Save to `${user_config.product_home}/identity/naming.md`:
 
@@ -396,11 +400,8 @@ positioning, what the CPTO is staking on it. 1–3 paragraphs.]
 
 ## Usage rules
 
-### Approved short forms and nicknames
-- ...
-
 ### Forbidden variants
-- ... (misspellings, forbidden stylizations, former names if rebrand)
+- ... (misspellings, former names if rebrand)
 
 ### How it appears in sentences
 [Capitalization, article usage, possessive form, plural form]
@@ -432,7 +433,6 @@ positioning, what the CPTO is staking on it. 1–3 paragraphs.]
 |---|---|---|
 | USPTO | clear / conflict / ambiguous / skipped | [verbatim CPTO detail] |
 | WIPO | ... | ... |
-| EUIPO | ... | ... |
 
 ### Generation context
 - **Pool size:** [actual, post-dedupe]
