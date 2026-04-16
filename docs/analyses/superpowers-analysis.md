@@ -459,3 +459,105 @@ The gap we fill is above both: product-level work management that feeds into
 the Superpowers execution loop. Superpowers handles brainstorm → ship.
 Our framework handles backlog → brainstorm, making the full cycle:
 **backlog → groom → brainstorm → plan → implement → review → ship → retrospect**.
+
+---
+
+## Update 2026-04-16 — worktree rototill + Codex-plugin pipeline
+
+Two weeks of upstream work split across branches. **`main` received
+only the Codex-plugin sync pipeline**; the comprehensive worktree
+rototill lives on `dev` and has not yet been merged. Squad tracks
+`main`, so dev-branch improvements are signal for the direction but
+not yet part of the installed plugin.
+
+### Themes
+
+**Worktree discipline tightened (dev branch, PR #1121 / `1e8000a`,
+`4652e65`, `5dade17`).** Large refactor of the `using-git-worktrees`
+skill: Step 0 detects whether the agent is already inside a worktree
+(`GIT_DIR != GIT_COMMON`), Step 1a prefers harness-native tools
+("do you have a tool named like X / Y / Z? use it"), Step 1b falls
+back to raw `git`, with a submodule guard. Backed by 50 TDD runs
+pre-merge. Two post-merge drill failures caught additional
+loopholes, both fixed: consent prompt allowing agents to rationalize
+away worktree creation (`b8bced4`) and a sibling-worktree escape
+path (`b8d9f06`). Multi-repo guidance added (`f072884`, `ddbba8e`).
+
+**Codex-plugin distribution pipeline (main).** `sync-to-codex-plugin`
+rewritten to be path-agnostic, auto-detect upstream, generate
+Codex-specific overlays inline, and open a PR via `gh pr create`
+with deterministic output (`ac1c715`). Supports `--dry-run`,
+`--yes`, `--base`, `--local`, and a new `--bootstrap` flag
+(`bcdd7fa`) for creating the initial plugin PR from scratch.
+`CODE_OF_CONDUCT.md` mirrored and `agents/openai.yaml` overlay
+dropped (`777a977`); `interface.defaultPrompt` seeded for the
+Codex plugin (`34c17ae`) so the listing isn't empty. Majority-pattern
+alignment across 22 plugins.
+
+**Cleanup.** Vestigial `CHANGELOG.md` removed (`a5d36b1`); hardcoded
+`/Users/jesse` paths replaced with generic placeholders (`e3dd3b4`);
+rsync exclude patterns anchored to source root so
+`skills/brainstorming/scripts/` isn't silently dropped (`bc25777`);
+Discord invite link corrected (`917e5f5`, `a6b1a1f`).
+
+### Addresses previously-identified weaknesses
+
+*Partial — Section 6d "rubber-stamp risk / self-review bias."* The
+`code-reviewer` skill itself is unchanged, but the worktree rototill
+demonstrates the methodology for closing 6d in-repo: 50 TDD
+pressure-test runs pre-merge, then two drill-caught loopholes fixed
+post-merge (`b8bced4`, `b8d9f06`). The pattern now exists; applying
+it to `code-reviewer` remains pending.
+
+*Addressed — Section 8 #14 "deprecated command stubs."* Removed
+by `f55f8df` (PR #1188) on `dev`. Not yet on `main`.
+
+*Unaddressed —*
+- 6a (no persistent state across sessions)
+- 6c (no skill chaining / artifact graph)
+- 6e (token overhead from preamble)
+- 6f (no visual / browser companion)
+- 6g (no product-level work management)
+
+None of these saw commits in the window. They remain the slots
+Squad fills.
+
+### Stale claims (annotate, don't rewrite)
+
+- Section 4 tier-3 "Using-Git-Worktrees" described the skill as
+  "mostly documents standard git worktree usage." Stale for `dev`:
+  skill is now detect-and-defer (Step 0 inside-worktree check,
+  Step 1a harness-native tool preference, Step 1b git fallback,
+  submodule guard). On `main` the baseline characterization still
+  holds; this will change when dev merges.
+- Section 8 #14 "deprecated command stubs" — removed on `dev`,
+  not yet on `main`.
+
+### Signal for Squad
+
+1. **Consent prompts trap invoked skills.** `b8bced4` walked back
+   a consent-before-worktree ask because agents rationalized both
+   paths. The principle — *"skill invocation IS the request; don't
+   re-confirm"* — applies directly to Squad's produce+validate
+   pattern. When a user invokes `product-brief/produce`, the skill
+   should not stop to ask "should I produce a brief?"
+2. **Prefer native harness tools over manual equivalents.** The
+   Step 1a pattern in the new worktree skill ("do you have a tool
+   named like X/Y/Z? use it") is directly reusable. Squad skills
+   that could dispatch to harness features (worktrees, subagents,
+   background tasks) or do the work manually should ask about
+   harness tools first.
+3. **Cross-harness distribution is a solved problem with a
+   pattern.** `sync-to-codex-plugin.sh` is Superpowers' answer to
+   single-source + per-harness overlay. Squad should either mirror
+   this pattern or commit to harness-neutral skill content. Mixing
+   strategies invites the maintenance burden this tool is designed
+   to eliminate.
+4. **Skill quality is a moving target that benefits from pressure
+   tests.** 50 clean TDD runs did not prevent two drill-caught
+   loopholes from slipping through. The lesson: Squad's
+   execution-tier tests catch different failure modes than
+   knowledge/triggering tests, and drilling adversarial inputs
+   post-ship remains necessary. This is a vote for keeping
+   execution-tier budget alongside the lighter tiers, even if
+   expensive.

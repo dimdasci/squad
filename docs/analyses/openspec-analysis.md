@@ -319,7 +319,11 @@ scenario nesting) but can't validate semantic quality. A spec that says
 must include the full updated content — partial content "loses detail at
 archive time." The schema warns about this but the system can't prevent
 it. A poorly written MODIFIED delta silently overwrites a good existing
-requirement.
+requirement. [Updated 2026-04-16: as of v1.3.0, two specific
+silent-corruption paths are now caught by structural validation
+(commit c8e2072) — delta headers leaking into main specs, and
+requirement blocks outside the Requirements section. Semantic
+fragility still remains.]
 
 ### Design tensions
 
@@ -546,3 +550,126 @@ Backlog → Groom → Propose → Spec → Design → Plan → Execute → Revie
 ```
 
 MIT licensed — derivative works permitted with attribution.
+
+---
+
+## Update 2026-04-16 (two weeks after baseline)
+
+Baseline was v1.2.0 at 541 commits. Repo has since shipped **v1.3.0**
+(tag `9b5007d`, Apr 12) plus follow-up fixes through Apr 15. Activity
+falls into three buckets: cross-platform CLI stabilization, tooling
+breadth, and a substantial design exploration of workspace / multi-repo
+planning that is **not yet implemented**.
+
+### Weaknesses from prior analysis: what moved
+
+**Partially addressed — "Spec quality depends on the LLM" / "Archive
+merge is fragile for complex changes."**
+Originally (§6): *"The validation engine checks structural compliance
+... but can't validate semantic quality"* and *"A poorly written
+MODIFIED delta silently overwrites a good existing requirement."*
+Commit `c8e2072` (fix: detect hidden requirements in main specs) adds
+`src/core/parsers/spec-structure.ts` — a new validator that flags two
+previously-silent failure modes in main specs: delta headers
+(`## ADDED/MODIFIED/REMOVED Requirements`) leaking into canonical
+specs, and `### Requirement:` blocks outside the `## Requirements`
+section. The validation runs during `archive` and `specs-apply`, so a
+malformed merge now raises an issue instead of silently corrupting the
+main spec (+463 lines of code and tests; 11 files touched). This does
+not validate *semantic* quality ("SHALL work correctly" still passes),
+but it closes one specific archive-merge fragility path called out in
+the baseline. **Partial**, not complete.
+
+**Partially addressed — "No backlog or prioritization" at the
+cross-boundary level.**
+Originally (§6 and §9): *"Changes are independent units with no
+product-level management."* Commits `cd5e493` and `c0f2904` add
+~3,200 lines of exploration docs under `openspec/explorations/`
+(workspace-architecture, workspace-roadmap, workspace-user-journeys,
+workspace-ux-simplification, explore-workflow-ux). They introduce the
+**initiative** primitive — a shared planning object above per-repo
+changes, with stable project identifiers linking initiative-level
+plans to repo-local `changes/`. This is explicitly exploratory; no
+code ships for it yet. The roadmap is staged (Phase 1: nested spec
+paths; Phase 2: thin cross-repo coordination; Phase 3: team-shared
+coordination; Phase 4: governance). It signals where the project is
+heading, not where it is. **Exploration only.**
+
+**Not addressed — execution / discipline / review gaps.**
+The baseline's core critique (§6) — no execution orchestration, no
+behavioral discipline, no code review beyond self-verify, session-bound
+apply — remains untouched. Nothing in the two-week window shifts the
+execution story. OpenSpec continues to be strong at the contract layer
+and absent at the execution layer, exactly as summarized in §11.
+
+### Stale or imprecise claims corrected inline
+
+No factual claim in the baseline is wrong as of 2026-04-16, but one is
+incomplete and has been annotated inline above in §6 ("Archive merge is
+fragile for complex changes") with an `[Updated 2026-04-16: ...]` note
+acknowledging that two specific silent-corruption paths are now caught
+by commit `c8e2072`. The `openspec/` tree in §3 does not include the
+`explorations/` subdirectory, but that is a **local convention inside
+OpenSpec's self-hosted workspace**, not a framework primitive, so §3 is
+left as-is.
+
+### New observations from the two-week window
+
+**Cross-platform hardening is the dominant theme.**
+Six of the shipped fixes are platform/IO correctness: `1445282`
+(PowerShell UTF-16 BOM preservation, opt-in shell completion),
+`4df6a48` (firewalled-env telemetry suppression with 1s timeout and
+synthetic 204), `a18d992` (ora spinner leaks to stderr under `--json`,
+breaking AI agents that combine streams), `caafd7c` (pi.dev
+colon→hyphen command transforms), `7d07101` + `93f7b79` (canonical
+path handling via native realpath), `765df47` (bare `.github/` no
+longer misdetects Copilot). These are the signs of a CLI moving from
+"works on my machine" to "works in CI, Windows, locked-down
+enterprise, and AI-agent stdout pipes." Relevant to Squad only as a
+warning: any CLI we ship eats this cost later; better to avoid
+shipping one.
+
+**Tool coverage continues expanding.**
+Four new AI tool integrations in this window: IBM Bob (`94d651d`),
+JetBrains Junie (`af0b341`), Lingma (`5ac1e12`), ForgeCode
+(`ea6f380`). Baseline table (§8) says "26 tool adapters" — that
+number is now higher. Pattern holds: one TypeScript adapter per tool,
+registered in `CommandAdapterRegistry`. Reinforces the baseline
+observation that tool-agnostic skill generation is OpenSpec's widest
+moat.
+
+**Apply instructions got a real fix, not just a cosmetic one.**
+Commit `7fe45ca` (Fix apply instructions for glob artifact outputs)
+moves artifact-output resolution into a dedicated
+`src/core/artifact-graph/outputs.ts` module and enforces "file-only
+literal artifact outputs." This is a meaningful cleanup of the
+instruction-assembly layer described in §3. Doesn't close the
+execution-orchestration gap but does suggest the apply workflow is
+getting incremental attention.
+
+### Signal for Squad
+
+Two useful data points:
+
+1. **OpenSpec itself is acknowledging the gap between single-repo and
+   cross-boundary planning.** The initiative + linked-change primitive
+   they are exploring is almost exactly the multi-artifact coordination
+   problem Squad's durable foundations (Product, Architecture, Design
+   System, Product Identity) are meant to solve. The OpenSpec team is
+   reaching for a **coordination workspace** as a neutral home for
+   cross-repo plans. Squad's "long-lived artifacts shared across
+   sessions, branches, and agents" is the same intuition arriving from
+   a different angle. Worth watching whether their Phase 2 coordination
+   layer ships — it's a natural reference for how Squad's shared
+   artifact layer might be addressable by stable IDs.
+
+2. **The baseline recommendation to adopt the artifact model but not
+   the CLI still holds.** Nothing in this window changes the split
+   identified in §10: adopt specs-as-living-truth, delta evolution,
+   change isolation, schema-driven workflows, dynamic instruction
+   enrichment, and archive-as-decision-log. Skip the
+   CLI-as-orchestration-layer, session-bound execution, and
+   verify-by-checkbox. The v1.3.0 direction (more tools, more
+   platforms, more specification ergonomics) is consistent with the
+   baseline positioning — OpenSpec is doubling down on being the
+   contract engine, not becoming an execution harness.

@@ -585,3 +585,126 @@ Product vision                                              Feature shipped
      |                                                           |
   "Build X"  →  backlog  →  groom  →  brainstorm → plan → execute → review → ship
 ```
+
+---
+
+## Update 2026-04-16 — v2.64 → v2.75
+
+Two weeks of upstream work on `main`: **762 commits**, eleven minor
+releases (v2.64 → v2.75). Pace accelerated vs. the baseline window
+(v2.52 → v2.64 took six weeks; the same delta now takes two). Total
+commit count since inception is ~2,842, up from the 2,641 cited in
+Section 2.
+
+### Themes
+
+**UOK control-plane decomposition (ADR-009).** The Plan Plane lands
+(`58a05c259`, `fdc203a91`, `03410a10b`) with a plan-gate that
+**fails closed** on missing acceptance criteria, missing verification
+steps, cyclic dependencies, or artifacts without owners. GSD-2's
+six-plane model (Plan / Execution / Model / Gate / GitOps / Audit) is
+independently arriving at a decomposition structurally analogous to
+Squad's 5-roles-4-gates model.
+
+**Specialist subagent registry** (`8ae59babd`). Eight specialist
+subagents shipped, including a `reviewer` with severity tags and a
+three-way verdict (APPROVE / REQUEST_CHANGES / NEEDS_DISCUSSION).
+Not yet wired into auto-dispatch as a mandatory review phase.
+
+**TDD gate as structural state machine.** `/gsd debug` now carries a
+persisted gate (`pending` → `red` → `green`) with structured
+checkpoints `root-cause-found`, `inconclusive`, `human-verify`
+(`5831cab68`, `ef2e48e1f`, `bf2beb8df`, `4c3afff9e`). Applies only
+to debug sessions — not to the general execute flow — but it's the
+first structural (not prompt-based) TDD discipline in the codebase.
+
+**Systematic learnings extraction.** A knowledge graph
+(`a604a71a5`), a `/gsd extract-learnings` command (`e24147a1b`), and
+a LEARNINGS-into-graph feedback loop (`5d8df6b4d`). Extraction is
+now queryable by token budget and confidence-tiered. This is the
+first mechanism in GSD-2 for durable knowledge accumulation across
+fresh-context units.
+
+**Model coverage.** Full claude-opus-4-7 integration across
+Anthropic / Bedrock / OpenRouter / Antigravity with native xhigh
+effort support (`dd7f4daf`, `df8a709`, `899c5158`); Anthropic SDK
+bumped to 0.90.0 to unlock it. Docs recommend 4-7 over 4-6 for heavy
+tier work.
+
+**Supply-chain reliability.** Multi-branch CI with dev→test→main
+promotion and `@dev`/`@next`/`@latest` dist-tags (`7eee00ad`);
+`forensics-check` workflow for structured bug-report intake
+(`bc132082`).
+
+### Addresses previously-identified weaknesses
+
+*Partial — "Reviews are absent" (§6).* The specialist registry
+(`8ae59babd`) ships a `reviewer` subagent with severity/verdict
+structure, but it isn't a mandatory gate and isn't dispatched in
+parallel with other specialists. Still short of Gstack's multi-lens
+review surface.
+
+*Partial — "Planning quality unvalidated" (§6).* ADR-009 Plan Plane
++ plan-gate fails closed on structural gaps in the plan. This is a
+real step forward from the baseline where planning output was trusted
+as-is.
+
+*Narrow — "No behavioral discipline / no rationalization counters"
+(§6).* The `/gsd debug` TDD state machine is the first structural
+discipline mechanism. Scope limited to debug; general execute flow
+still lacks Superpowers-style counters and pressure tests.
+
+*Substantial — "Fresh context prevents learning" (§6).* The
+knowledge graph + extract-learnings command + feedback loop close
+this gap meaningfully. Extraction is systematic and queryable, not
+ad-hoc. This is the most significant architectural improvement in
+the window.
+
+*Confirmed, not fixed — "Dual-path state derivation" (§6).*
+Incident #4324 (`89d54edae`, `b65a35ce3`) documents a production
+failure where the legacy filesystem-path bulk-overwrote 5 milestone
+SUMMARYs with thinner regenerated versions after a journal reset.
+The fix is a reconciliation guard, not an architectural resolution;
+DB-as-source-of-truth vs. disk-as-source-of-truth is still not
+unified.
+
+### Stale claims (to be read alongside the baseline)
+
+- Section 2 "~93,000 lines of non-test TypeScript" — not
+  re-measured; likely higher after ADR-009 planes and new specialist
+  registry.
+- "2,641 commits" — now ~2,842.
+- Baseline v2.64.0 is superseded; current is v2.75.
+- Claim that "the LLM never chooses which prompt to load" still
+  holds; the specialist-registry dispatch is still orchestrator-driven.
+
+### Unverified
+
+The activity digest from the review team claimed "Phase 10 TS-strict
++ zero-any campaign completed." No in-window commits match
+`strict|any|zero-any` in titles. `de9ef4204 chore: code quality
+cleanup and contract hardening` is consistent with cleanup but does
+not prove strict-mode completion. Treat as unconfirmed.
+
+### Signal for Squad
+
+1. **UOK's 6 control planes converge with Squad's 5-roles/4-gates
+   model.** Two teams are independently decomposing toward the same
+   structure: plan/execute/review as separable planes with gates
+   between them. Validates the framing. The plan-gate concept maps
+   cleanly to Squad's produce+validate pattern at the artifact level.
+2. **Structural TDD (state machine) as precedent for execute-layer
+   skills.** GSD-2 encodes discipline in artifact shape, not LLM
+   instructions. For Squad's execute layer, this is a concrete model
+   to consider — harder structure for execution flows than for
+   foundations. Reinforces prose-first-for-foundations while
+   suggesting more structure below.
+3. **Learnings extraction + knowledge graph is a pattern Squad
+   lacks.** Squad has no mechanism for durable knowledge
+   accumulation separate from the four foundations. Worth brainstorming
+   whether the foundations themselves serve this role or whether a
+   sibling `learnings/` layer belongs in the architecture.
+4. **Dual-path state derivation is a cautionary tale.** The #4324
+   incident shows what happens when two sources of truth diverge.
+   Squad's shared-artifact-layer (env-var paths, single-source)
+   sidesteps this class of bug.

@@ -510,3 +510,64 @@ Product vision                                              Feature shipped
      |                                                           |
   "Build X"  →  discover → prioritize → backlog → groom → brainstorm → plan → execute → review → ship
 ```
+
+---
+
+## Update 2026-04-16 — quiet period, one new component skill
+
+Two weeks of upstream activity: exactly one merge, `4aa4196`
+(2026-04-02, PR #4 from Yuqing Pan) adding the
+`product-sense-interview-answer` component skill (+568 insertions
+across SKILL.md + template + worked example). No governance,
+validator, or license changes. LICENSE file remains CC BY-NC-SA 4.0.
+
+### Addresses previously-identified weaknesses
+
+**None.** The five architectural gaps called out in Section 6
+(no state management, no execution handoff, no backlog management,
+shallow command orchestration, no quality gate) and the CC BY-NC-SA
+license constraint are all untouched. One leaf component skill
+was added; nothing structural shifted. Phase 6 (AI PM skills —
+evals, observability, maintenance) remains listed as in-progress
+with no movement.
+
+### Stale claims (annotate, don't rewrite)
+
+- Section 4 "47 skills" → **48** after PR #4.
+- "Component (21 skills)" → **22**.
+- "Career & Leadership (5 skills)" → **6** (the new skill is
+  themed career-leadership).
+
+### New observations
+
+- PR #4 is a positive signal for the v0.75 pedagogic-first
+  governance: an external contributor's skill was accepted because
+  it carried the required scaffolding — explicit "Why This Works",
+  named anti-patterns, consequence chains, worked good/bad examples,
+  conforming frontmatter. The protected-content rule is working as
+  a PR-review filter in practice.
+- The six-part answer spine (Clarify → Rationale → Goal →
+  Segmentation → Pain Points → Solution) is a clean example of the
+  teaching-first pattern: the skill forces the user/agent through a
+  named framework rather than going straight to an answer.
+
+### Signal for Squad
+
+No strategic shift. The reference project is idling at leaf-skill
+granularity. Two lessons worth carrying forward:
+
+1. **Governance as a PR-review filter** — a protected-content rule
+   (scaffolding must be present or the skill is rejected) is a
+   low-ceremony way to maintain quality as a skill library grows.
+   Worth borrowing once Squad's skill surface justifies accepting
+   outside contributions.
+2. **Named frameworks over free-form prose** — PM Skills'
+   consistent pattern of giving each skill a named spine (the
+   "six-part answer", the "three-part rationale", etc.) is a
+   readability and enforceability win. Squad's produce+validate
+   pair already has named phases; applying the same naming
+   discipline inside long skills is worth considering.
+
+The extractable patterns are the same ones already catalogued.
+Continue monitoring Phase 6 for movement on the AI PM skills that
+would be most relevant to Squad.

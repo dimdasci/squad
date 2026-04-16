@@ -383,3 +383,155 @@ A derivative work should:
 4. Add completeness gates (not just correctness)
 5. Remove the marketing (YC pleas, founder signals, resource pools)
 6. Keep the browser daemon as-is — it's good engineering
+
+---
+
+## Update 2026-04-16 — v0.16.0 through v0.18.0
+
+Two weeks of upstream work (v0.15.13 → v0.18.0, 38 commits). Version
+numbering now includes a fourth segment (v0.18.0.0). Skill count grew
+from 36 to 38 (added `pair-agent`, `plan-devex-review`, `devex-review`;
+the baseline enumeration was slightly off).
+
+### Themes
+
+**AI-workflow hardening trilogy** — three features aimed at making the
+prompt library harder to bypass:
+
+1. *Confusion Protocol* (b805aa01, v0.18.0) — a STOP gate injected into
+   the preamble at tier >= 2, firing on "architectural decisions, data
+   model changes, destructive operations, or contradictory requirements"
+   but not routine coding. Framed as addressing "Karpathy failure mode
+   #1 (wrong assumptions)".
+2. *UX behavioral foundations* (23000672, v0.17.0) — Steve Krug's
+   usability tests distilled into a `UX_PRINCIPLES` resolver shared
+   across all four design skills; paired with a new `ux-audit` browser
+   meta-command and a `snapshot --heatmap` flag for agent-driven
+   UX analysis.
+3. *Relationship closing tiers* (dbd7aee5, v0.16.2) — `office-hours`
+   now reads `~/.gstack/builder-profile.jsonl` and selects one of four
+   closing tiers (introduction / welcome-back / regular / inner-circle)
+   based on session count.
+
+**Security wave 3** (7e96fe29, v0.16.4) — 12 fixes from 7 contributors,
+including symlink-bypass in `validateOutputPath`, shell-injection in two
+bin/ scripts, cookie-path validation bypass, form-field redaction beyond
+`type=password`, and session-file permissions. The browser daemon's
+security model continues to harden; the "real engineering" judgment from
+Section 5 is reinforced.
+
+**AI-slop reduction** (c6e6a21d, v0.16.3) — selective error handling
+utility module (`safeUnlink`, `safeKill`, etc.), replacing ~50
+defensive try/catch sites in `server.ts`, `cli.ts`, `sidebar-agent`,
+and `browser-manager`. Empty-catch count dropped from 22 to 2 in cli.ts.
+A `bun run slop:diff` hook was also wired into `/review` as an advisory
+(non-blocking) Step 3.5.
+
+**Multi-host expansion** — GBrain and Hermes host configs added
+(b805aa01), bringing host count to 10. A `GBRAIN_CONTEXT_LOAD` /
+`GBRAIN_SAVE_RESULTS` resolver pair was added to four "thinking"
+skills (office-hours, investigate, plan-ceo-review, retro) so agents
+running on the gbrain host can do brain-first lookup / save-to-brain.
+Suppressed to empty on other hosts.
+
+**Infrastructure** — triggers field added to all 38 skill templates
+(ddea3ad1) for GBrain's `checkResolvable()` router; gen-skill-docs
+now emits a 100KB ceiling warning per SKILL.md; E2E tests stopped
+writing into the user's real `~/.claude/skills/` (600b2237); Gemini
+E2E scaled back to smoke test (9019f4c0).
+
+### Addresses previously-identified weaknesses
+
+*Partial — YC marketing embedded in workflow (Section 6).* Original
+concern:
+
+> Office-hours skill contains a 300-line YC resource pool (34
+> videos/essays), tiered founder plea ("GStack thinks you are among
+> the top people who could do this"), and YC application link with
+> referral tracking.
+
+dbd7aee5 tiers the closing so the full YC plea now fires only on
+session 1; sessions 2–3 skip the plea and lead with recognition.
+Partial because: the plea + 34-resource pool still ship in the skill,
+still load into context on every invocation, and still activate
+verbatim for first-time users. The fix reduces repeated exposure,
+not payload size. File grew from 1,714 to 1,852 lines.
+
+*Partial — self-review problem (Section 6).* Original concern:
+
+> Claude reviewing Claude's work is structurally biased. The same
+> model that decided "this is done" evaluates whether it's done.
+
+b805aa01 wires `slop:diff` (a cross-tool scanner, not a model) into
+`/review` Step 3.5 as advisory-only. The Confusion Protocol STOP gate
+also adds an earlier ambiguity check. Partial because: slop:diff is
+advisory and never blocks; Confusion fires on input ambiguity, not on
+review-output over-confidence. The structural self-review bias is
+unchanged.
+
+*Not addressed — SKILL.md bloat (Section 6).* The bloat got worse,
+not better:
+
+| Skill               | Baseline (03973c2f) | Now (0.18.0) | Change |
+|---------------------|--------------------:|-------------:|-------:|
+| ship                | 2,543               | 2,567        | +24    |
+| plan-ceo-review     | 1,837               | 1,873        | +36    |
+| office-hours        | 1,714               | 1,852        | +138   |
+| plan-devex-review   | n/a                 | 1,852        | new    |
+| design-review       | (~1,640 est.)       | 1,766        | +126   |
+
+Confusion Protocol and GBrain placeholders added ~19 lines to each
+affected skill. The UX_PRINCIPLES resolver adds another resolver block.
+A 100KB per-skill token ceiling was introduced as a warning, not a
+hard limit. Platform guideline is still 500 lines; every major skill
+is 3–5x over.
+
+*Not addressed — skills don't chain / no artifact graph / reviews
+rubber-stamp / work-not-pushed (Section 6).* No commits in this window
+touched the shared review-log protocol, artifact registry, completeness
+gates, or `git push` exit-code validation in `/ship`.
+
+*Reinforces — self-contained skills pattern / design skills remain
+strongest (Section 5).* UX behavioral foundations ground the
+design-group strength in Krug/Redish/Jarrett instead of pure taste.
+This is the one area where new work compounds the existing strength
+rather than layering more discipline on top.
+
+### Stale claims (annotated inline, not rewritten)
+
+- Section 3 "The 36 skills by role" — count is now 38; `pair-agent`,
+  `plan-devex-review`, `devex-review` added since baseline.
+- Section 3 browser daemon TS line count (9,700) is likely higher now
+  after TabSession extraction, AI-slop refactor, security wave 3, and
+  the browser data platform commit (b73f3644). Baseline figure retained
+  as a snapshot of 03973c2f; not re-measured.
+- Section 6 office-hours bloat row (1,714 lines, 3.4x over limit) is
+  now 1,852 lines / 3.7x over; bloat worsened after relationship-closing
+  tiers were added.
+
+### Signal for Squad
+
+1. *The discipline-vs-bloat tradeoff hardens.* Gstack's path is to
+   keep adding enforcement layers (Confusion Protocol, slop:diff,
+   UX_PRINCIPLES, builder-profile tiers) as preamble injections.
+   Every new safeguard inflates every SKILL.md. Squad's lightweight
+   constraint (< 500 lines, supporting files, conditional loading)
+   is the direct alternative, and the distance between the two
+   approaches is now larger, not smaller.
+2. *Long-lived per-user state is being invented ad hoc.* Gstack's
+   `~/.gstack/builder-profile.jsonl` is a single-file append-only
+   log driving multi-session behavior — a point solution for
+   `office-hours` only. Squad's shared-artifact layer (env-var
+   paths, 18 artifacts across 5 layers) is the more general answer
+   to the same class of problem.
+3. *Cross-model review stays advisory.* The self-review structural
+   bias is still the hardest nut. Even with slop:diff wired in,
+   gstack stops short of making cross-model or cross-tool checks
+   blocking. Squad's produce+validate pair (where validate is a
+   distinct skill with a distinct lens) remains a stronger structural
+   answer than advisory-only additions.
+4. *Hosts are the real extensibility surface.* Gstack keeps adding
+   hosts (now 10) and now has a brain-awareness resolver pattern
+   that could generalize. If Squad wants to interoperate, the
+   declarative host config + resolver suppression pattern is the
+   integration point.
