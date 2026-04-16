@@ -6,9 +6,7 @@
 
 ## 1. Purpose of This Spec
 
-Establishes the phase-level architecture for the Design System foundation in squad, plus a handoff brief per skill. Each of the five skills will get its own per-skill design spec in a follow-up brainstorm; this spec pins the shared decisions so those follow-ups don't re-litigate them.
-
-Not in scope: exact numbered SKILL.md checklist items, methodology deep-dives, anti-slop catalog content, per-skill prompt wording. Those are the per-skill follow-up work.
+Establishes the phase-level architecture for the Design System foundation in squad, plus a handoff brief per skill. Each of the five skills will get its own per-skill design spec in a follow-up brainstorm; this spec pins the shared decisions so those follow-ups don't re-litigate them. Out-of-scope items enumerated in §11.
 
 ## 2. Design Phase Goal
 
@@ -44,23 +42,23 @@ Adaptive scope (Section 6) means each product populates only the surfaces declar
 
 Each decision carries a one-line "because" reflecting the reason from the Q&A loop.
 
-1. **Posture: hybrid consultant.** Research helpers use open-ended evidence-gathering; orchestrator uses consultant-style synthesis (proposes the whole package with rationale, invites pushback). *Because research is facts and synthesis is taste, and assembling a design system piece by piece from user answers produces incoherence.*
+1. **Posture: hybrid consultant** *(new vocabulary pinned in this spec — not inherited from foundation docs).* Research helpers use open-ended evidence-gathering; orchestrator uses consultant-style synthesis (proposes the whole package with rationale, invites pushback). *Because research is facts and synthesis is taste, and assembling a design system piece by piece from user answers produces incoherence.*
 
 2. **Adaptive surface scope.** Orchestrator reads declared surfaces from `architecture-record` and populates only the categories/sub-sections that apply. Missing categories don't appear at all; no "N/A" placeholders. *Because thin "N/A" sections signal absent taste, same as sloppy output does. The consultant posture requires that what's in the doc matters.*
 
 3. **MCP deprioritized toward CLI.** LLM-facing surface is a CLI output-mode variant, not a distinct surface. *Because MCP adds server abstraction cost without matching payoff, and LLM-readable CLI output is the cheaper, more composable path.*
 
-4. **Offer-once dependency handling.** When research briefs are missing, orchestrator prompts CPTO once with `(a) run all | (p) pick which | (s) skip and synthesize from built-in knowledge | chat`. *Because research helpers are substantial work (5–15 min each of Claude time); CPTO should consent to the cost, but shouldn't face a checkpoint gauntlet.*
+4. **Offer-once dependency handling.** When research briefs are missing, orchestrator prompts CPTO once with `(a) run all | (p) pick which | (s) skip and synthesize from built-in knowledge | or chat about this`. *Because research helpers are substantial work (5–15 min each of Claude time); CPTO should consent to the cost, but shouldn't face a checkpoint gauntlet.*
 
 5. **Research helper shape: shared header, domain body.** All three helpers emit identical front-matter (purpose, surfaces, confidence, sources cited, research gaps, "Decisions for Design System Doc"). Bodies differ by domain. *Because forcing three genuinely different research activities into one template tortures at least two of them; but the orchestrator needs a predictable consumption pattern.*
 
 6. **SAFE vs RISK framing for visual language + voice/tone only.** Other categories use plain one-line rationale. *Because SAFE/RISK earns its keep where there's a recognizable category expectation and room for signal via deliberate departure. Terminology and IA aren't "SAFE vs RISK"; they're consistent or not. Interaction patterns are mostly platform-determined.*
 
-7. **Two-pass synthesis: taste direction → detailed draft.** Taste direction is a short artifact (principles, aesthetic posture, SAFE/RISK calls) plus an HTML preview; CPTO aligns cheaply before orchestrator commits the full draft. *Because the full doc is substantial and first-draft surprises are expensive to undo; but coherence requires the detailed draft land as a whole, not category by category.*
+7. **Two-pass synthesis: taste direction → detailed draft.** Taste direction is a short artifact (principles, aesthetic posture, SAFE/RISK calls) plus an HTML preview; CPTO aligns cheaply before orchestrator commits the full draft. *Because the full doc is substantial and first-draft surprises are expensive to undo; but the full draft must be reviewed as one piece — category-by-category approvals fragment taste.*
 
 8. **Anti-slop blacklists baked into both produce and validate skills.** Named anti-patterns in support files; produce avoids them upfront, validate flags them in review. *Because design is where "generic" is most detectable and most harmful, and named patterns work better than "feels generic" hand-waving for both producer and reviewer.*
 
-9. **Pre-check existing-doc: update/fresh/cancel.** Orchestrator detects existing `system.md` on entry and asks CPTO intent explicitly. Decisions Log appended on updates. *Because durable artifacts need explicit intent — CPTO shouldn't accidentally rewrite months of accumulated taste by re-invoking.*
+9. **Pre-check existing-doc: update/fresh/cancel.** Orchestrator detects existing `system.md` on entry and asks CPTO intent explicitly. On update, the Decisions Log grows by one row. On fresh start, the existing doc is archived to `system.<date>.md.bak` *and* the new doc's Decisions Log opens with a `replaced` row referencing the `.bak` path — so the fresh start is itself a logged decision, not a silent rename. *Because durable artifacts need explicit intent — CPTO shouldn't accidentally rewrite months of accumulated taste by re-invoking, and even a deliberate replacement should leave a visible audit trail.*
 
 10. **HTML preview as load-bearing taste signal.** Taste-direction pass emits a viewable HTML preview (swatches, type specimens, faux-terminal output for CLI surfaces, component samples for GUI surfaces) alongside the prose taste direction. Non-durable but reproducible from the Doc. *Because visual decisions are hard to judge from text and preview is a taste accountability signal; pattern validated in gstack and superpowers practice.*
 
@@ -79,7 +77,7 @@ Five skills in the `design-system` family:
 | Skill | Role | Type | Validator? |
 |---|---|---|---|
 | `design-system` | Designer | Produce (orchestrator) | Yes — `design-system-review` |
-| `design-system-review` | Designer / QA | Validate (fork-context) | — |
+| `design-system-review` | QA / Reviewer | Validate (fork-context) | — |
 | `design-research-references` | Designer | Produce (Reference layer) | Self-validated |
 | `design-research-audience` | Designer | Produce (Reference layer) | Self-validated |
 | `design-research-standards` | Designer | Produce (Reference layer) | Self-validated |
@@ -132,11 +130,16 @@ Ten phases in order. Each phase has a clear termination condition; escalation ru
 
 **Phase 1 — Prerequisite check (hard gate).** Read `product-brief` (required, must be approved) and `architecture-record` (required, must declare surfaces). Missing → stop with an instruction for CPTO to run the prereq skill first. Never proceed with synthetic values.
 
-**Phase 2 — Existing-doc detection.** If `${product_home}/design/system.md` exists, summarize (last-modified date, categories covered, last Decisions Log entry) and prompt CPTO: `(u) update specific categories | (f) fresh start | (c) cancel | chat`. On update, CPTO names the scope (category list and/or surface list). On fresh, archive the existing doc to `system.<date>.md.bak` and proceed clean.
+**Phase 2 — Existing-doc detection.** If `${product_home}/design/system.md` exists, summarize (last-modified date, categories covered, last Decisions Log entry) and prompt CPTO: `(u) update specific categories | (f) fresh start | (c) cancel | or chat about this`. On update, CPTO names the scope (category list and/or surface list) and the synthesis runs scoped to that set. On fresh, archive the existing doc to `system.<date>.md.bak`, proceed clean, and open the new doc's Decisions Log with a `replaced` row pointing at the `.bak` — never a silent rename.
 
 **Phase 3 — Product Identity check.** Read `${product_home}/identity/naming.md`. If missing, invoke `product-naming` as a sub-skill and follow the Sub-skill Report protocol from `docs/ideation/squad-skills-architecture.md` (DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED). BLOCKED or NEEDS_CONTEXT from the sub-skill halts the orchestrator and surfaces to CPTO.
 
-**Phase 4 — Research dependency handling.** Check for all three briefs in `${product_home}/design/research/`. Any missing → prompt CPTO once: "Missing: `<list>`. `(a) run all | (p) pick which | (s) skip and synthesize from brief + built-in knowledge | chat`." Run selected helpers sequentially via the Sub-skill Report protocol. A BLOCKED helper surfaces the reason verbatim to CPTO; never silently fall through to built-in knowledge when a helper explicitly refused.
+**Phase 4 — Research dependency handling.** Check for all three briefs in `${product_home}/design/research/`. Any missing → prompt CPTO once: "Missing: `<list>`. `(a) run all | (p) pick which | (s) skip and synthesize from brief + built-in knowledge | or chat about this`." Run selected helpers sequentially via the Sub-skill Report protocol.
+
+Two failure modes to distinguish — the foundation doc (`squad-artifacts.md`) says "fall through, degrade gracefully" for Reference artifacts, and that applies to the missing-brief case. The BLOCKED case is different:
+
+- **Missing brief (CPTO opted to skip, or helper was never invoked)** → fall through; synthesize with reduced evidence and mark thin sections as `research-gap`. This is the degrade-gracefully path the foundation doc permits.
+- **Helper invoked and returned BLOCKED** → halt, surface the reason verbatim to CPTO. Never silently substitute built-in knowledge; CPTO explicitly asked the helper to run, so a silent swap violates agency.
 
 **Phase 5 — Taste direction.** Write a short artifact (roughly one page) with:
 
@@ -156,9 +159,9 @@ Present both to CPTO. Loop revisions on pushback until CPTO approves the directi
 
 **Phase 8 — CPTO approval.** Present full draft plus review report. CPTO options: approve, request changes (loops back to Phase 5 if taste shifts; Phase 6 if category-level; re-validates), or chat.
 
-**Phase 9 — Finalize.** On approval: write `system.md`, append a Decisions Log row, regenerate the preview HTML from the final state (so preview matches doc, not just taste direction), record the review report path.
+**Phase 9 — Finalize.** On approval: write `system.md`, append the Decisions Log row, regenerate the preview HTML from the final state (so preview matches doc, not just taste direction), record the review report path. Completion criteria per §2 "What 'done' means".
 
-**Phase 10 — Chain.** Declare next skill. Actual chain target is a per-skill follow-up decision (candidates: CPTO picks next foundation / `product-backlog` / inner-cycle entry). Optional chain.
+**Phase 10 — Optional chain.** No default next skill; CPTO picks. The chain target (candidates: CPTO picks next foundation, `product-backlog`, inner-cycle entry) is resolved in the `design-system` per-skill follow-up brainstorm, not here.
 
 **Decisions Log row shape:**
 
@@ -306,7 +309,7 @@ Each named pattern carries a one-line "why it's slop" so the validator applies s
 
 - Does not validate product UI code — that's `design-gate` (inner-cycle skill, separate scope).
 - Does not re-run research — flags "research gap" and suggests the helper, doesn't invoke.
-- Does not second-guess CPTO-approved SAFE/RISK calls — flags fake rebellion or inconsistency, not taste disagreement.
+- Does not second-guess CPTO-approved SAFE/RISK calls — flags fake rebellion or inconsistency, not taste disagreement. ("Fake rebellion" = a RISK choice that departs from category norm without earning the departure; e.g., a contrarian color with no brand reason, a swapped hex value dressed as a bold move.)
 
 ## 9. Per-Skill Init Briefs (Handoffs)
 
@@ -321,7 +324,6 @@ Short handoff briefs for the follow-up per-skill brainstorms. Each carries scope
 - **Anticipated support files:** `SKILL.md` (process + checklist), `synthesis-guide.md` (consultant posture + SAFE/RISK framing), `anti-slop.md` (shared with `-review`), `preview-template.html` (adaptive skeletal HTML).
 - **Chains:** TBD — candidates: CPTO-led next-foundation pick, `product-backlog`, inner-cycle entry. Optional chain.
 - **Open for follow-up brainstorm:**
-  - Numbered checklist items + handoff prompts between phases.
   - Surface-detection logic (strict read of arch-record vs CPTO confirmation prompt).
   - Preview HTML template component set per surface (GUI vs CLI vs hybrid vs docs-only vs API-only).
   - Whether update-mode with narrow scope can skip the taste-direction pass.
@@ -330,7 +332,7 @@ Short handoff briefs for the follow-up per-skill brainstorms. Each carries scope
 
 ### `design-system-review`
 
-- **Role:** Designer / QA. Fork-context validator.
+- **Role:** QA / Reviewer. Fork-context validator.
 - **Inputs:** `design/system.md`, `design/preview/<latest>.html`, `design/research/*.md`, `product/brief.md`, `architecture/record.md`, `identity/naming.md`.
 - **Outputs:** findings report at `design/reviews/<date>.md`.
 - **Methodology pointers:** per-category + cross-cutting checklist, impact triage, dual scoring, evidence-per-finding, depth over breadth, shared anti-slop catalog.
@@ -390,6 +392,7 @@ Short handoff briefs for the follow-up per-skill brainstorms. Each carries scope
 
 ### Cross-cutting notes for all five follow-ups
 
+- Every per-skill brainstorm produces numbered checklist items and between-phase handoff prompts for its SKILL.md — implicit deliverable, not a per-skill open item.
 - All skills write to `${product_home}/` per shared-artifact-layer principle.
 - All produce skills follow checklist-driven shape (TaskCreate per step).
 - All research helpers self-validate; only `design-system` has a fork validator.
