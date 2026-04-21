@@ -1,0 +1,1 @@
+We have an approved product brief and architecture record and now need to establish the design foundation — principles, voice, visual language, and so on — that feature work will validate against.
