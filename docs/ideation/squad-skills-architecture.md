@@ -25,13 +25,10 @@ squad/
 │   │   └── SKILL.md             # Shipped v0.2.0
 │   ├── architecture-record-review/
 │   │   └── SKILL.md             # Shipped v0.2.0 (context: fork)
-│   ├── product-naming/          # planned — design-family prerequisite
-│   ├── product-naming-review/   # planned (context: fork)
-│   ├── design-research-references/  # planned — Reference layer
-│   ├── design-research-audience/    # planned — Reference layer
-│   ├── design-research-standards/   # planned — Reference layer
-│   ├── design-system/           # planned — orchestrator
-│   ├── design-system-review/    # planned (context: fork)
+│   ├── product-naming/          # Shipped v0.3.0
+│   ├── product-naming-review/   # Shipped v0.3.0 (context: fork)
+│   ├── design-system/           # Shipped v0.3.0
+│   ├── design-system-review/    # Shipped v0.3.0 (context: fork)
 │   ├── product-backlog/         # planned
 │   ├── product-gate/            # planned
 │   ├── architecture-gate/       # planned
@@ -297,6 +294,10 @@ the fan-out variant.
 | `product-brief-review` | QA/Reviewer | Validate (fork) | 110 | Yes — e2e test |
 | `architecture-record` | Architect | Produce | 323 | Pending |
 | `architecture-record-review` | QA/Reviewer | Validate (fork) | 123 | Pending |
+| `product-naming` | Designer | Produce | 521 | Yes — manual execution test |
+| `product-naming-review` | Designer / QA | Validate (fork) | 200 | Yes — manual execution test |
+| `design-system` | Designer | Produce | 360 | Pending (manual execution test) |
+| `design-system-review` | Designer / QA | Validate (fork) | 194 | Pending (manual execution test) |
 
 ### Planned
 
@@ -313,31 +314,30 @@ extending foundations that already exist, and both outrank gates
 (which presuppose a working inner cycle).
 
 **Design-skills family.** The Design System foundation is produced
-by a family of four skills (plus one review pair) using the
-orchestration pattern. `design-system` is the entry-point
-orchestrator; it invokes three `design-research-*` helpers as
-dependencies before synthesizing the Design System Doc. All family
-members are independently invocable for standalone use.
+by a two-skill pair (`design-system` + `design-system-review`)
+following the shipped produce/validate pattern. Research happens
+inline inside the produce skill (WebFetch/WebSearch plus built-in
+knowledge); there are no separate helper skills. This supersedes
+earlier notes that described a four-skill family with
+`design-research-*` helpers — those were removed per the
+2026-04-19 design spec Decision 4 (shipped-pair shape proves inline
+research works; coordination cost of separate helpers outweighed
+payoff for a solo operator).
 
 **Product Identity skills.** The Product Identity foundation is
 produced by a separate pair of skills — `product-naming` and
 `product-naming-review` — which are not part of the design-skills
-family. `design-system` invokes `product-naming` as a dependency
+family. `design-system` invokes `product-naming` as a sub-skill
 when the brief has no name, crossing the foundation boundary (skill
-invocation is orthogonal to foundation membership).
+invocation is orthogonal to foundation membership). Both pairs are
+shipped.
 
-Bottom-up build order: Product Identity and design-research
-dependencies first, then the `design-system` orchestrator.
+Bottom-up build order: Product Identity first (shipped), then the
+`design-system` produce/validate pair (shipped). No helper skills
+in this family.
 
 | Skill | Role | Foundation | Type | Priority |
 |-------|------|-----------|------|----------|
-| `product-naming` | Designer | Product Identity | Produce | 1 — Next (closes Identity foundation; also standalone for rebrands) |
-| `product-naming-review` | Designer / QA | Product Identity | Validate (fork) | 1b — pairs with above |
-| `design-research-references` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with peer landscape |
-| `design-research-audience` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with audience context |
-| `design-research-standards` | Designer | Design System (Reference layer) | Produce | 2 — feeds `design-system` with applicable standards |
-| `design-system` | Designer | Design System | Produce (orchestrator) | 3 — synthesizes dependencies into the durable Design System Doc |
-| `design-system-review` | Designer / QA | Design System | Validate (fork) | 3b — pairs with above |
 | `product-backlog` | Product Owner | Product | Produce | 4 — extends shipped Product foundation |
 | `product-gate` | QA / Reviewer | Product | Validate | 5 — validates Product foundation |
 | `architecture-gate` | Architect | Architecture | Validate (fork) | 6 — validates Architecture foundation |
@@ -354,10 +354,6 @@ Notes:
   approval time. The artifact lives at
   `${user_config.product_home}/identity/naming.md` and is the sole
   member of the Product Identity durable foundation.
-- The three `design-research-*` skills are the first named members
-  of the Reference layer (see `squad-artifacts.md`). They are
-  optional dependencies — `design-system` falls through to built-in
-  knowledge if a research brief is missing, with reduced quality.
 - Product Identity has no dedicated inner-cycle gate. The QA Gate
   covers naming consistency (capitalization, short forms, forbidden
   variants) as part of its terminology checks. Human CPTO approval
@@ -409,10 +405,7 @@ validated:
 | `architecture-record` | Validated | C4 Model L1+L2 + Nygard ADR |
 | `architecture-gate` | Hypothesis | Fitness functions + boundary checklist |
 | `product-naming` | Designed | Igor 4-category taxonomy (functional / invented / experiential / evocative) + Watkins SMILE/SCRATCH rubric + Meyerson 7-stage pipeline + parallel subagent generation (4 differentiated lenses, Lexicon decoy-brief analogue) |
-| `design-research-references` | Hypothesis | Three-layer synthesis: tried-and-true (category baseline) + trending (current discourse) + first-principles (deliberate departures). Peer-product landscape analysis. |
-| `design-research-audience` | Hypothesis | JTBD-traced audience analysis + existing-convention inventory + accessibility needs mapping |
-| `design-research-standards` | Hypothesis | WCAG level selection + platform HIG enumeration (Apple HIG, Material Design where applicable) + industry regulation review + CLI norms (clig.dev, POSIX) + API error voice conventions |
-| `design-system` | Hypothesis | Orchestration of `product-naming` + `design-research-*` dependencies, then synthesis into a 7-category durable doc (principles, voice, terminology, IA, interaction, visual, surface conventions). Gstack DESIGN.md template as structural baseline for the visual-language category. SAFE/RISK framing for the creative proposal. |
+| `design-system` | Validated | Consultant-posture synthesis into a 7-category adaptive doc (principles, voice, terminology, IA, interaction, visual, surface conventions). Inline research via WebFetch/WebSearch (peer lookups, platform/CLI/API/docs standards, JTBD-traced audience). SAFE/RISK framing on visual language + voice/tone; plain one-line rationale on other decisions. Companion HTML preview from single adaptive template. |
 | `design-gate` | Hypothesis | Confidence-tier checklist + WCAG essentials + per-surface routing (GUI, CLI, docs, API error voice) |
 | `qa-gate` | Hypothesis | BDD scenarios + exploratory testing charters |
 | `delivery-record` | Hypothesis | Delta changelog + narrative arc demo |

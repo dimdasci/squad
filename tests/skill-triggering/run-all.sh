@@ -17,6 +17,9 @@ TESTS=(
     "product-naming product-naming-explicit.txt"
     "product-naming product-naming-implicit.txt"
     "product-naming-review product-naming-negative.txt"
+    "design-system design-system-explicit.txt"
+    "design-system design-system-implicit.txt"
+    "design-system-review design-system-negative.txt"
 )
 
 echo "=== Running Skill Triggering Tests ==="
