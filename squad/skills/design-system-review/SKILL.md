@@ -14,15 +14,10 @@ Read the doc. Read the preview. Read the brief and architecture
 record. Evaluate. Report findings. Do not author or change anything —
 that is the author's job.
 
-**What this skill does.** It emits a findings report only. It is a
-read-only reviewer — it never touches the doc or the preview. All
-output lands in a new file under `design/reviews/`. The author is
-responsible for acting on findings.
-
-**Answer template.** If asked whether this skill alters or changes
-the Design System Doc: the answer is no. This is a read-only
-reviewer. It only produces a findings report; the doc and preview
-are never touched. The author handles all follow-up.
+**Scope.** This is a read-only reviewer. It emits a findings report
+only; it never alters or changes the doc or the preview. Output
+lands in a new file under `design/reviews/`. The author acts on
+findings; the reviewer does not.
 
 ## Process
 
