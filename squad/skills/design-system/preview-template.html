@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design System Preview — {{PRODUCT_NAME}} — {{DATE}}</title>
+<style>
+  /* Base: system fonts, subtle layout, generous whitespace.
+     Specific tokens below are overridden by the populated instance. */
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 2rem; color: #111; }
+  section { margin-bottom: 3rem; border-top: 1px solid #eaeaea; padding-top: 2rem; }
+  h1 { font-size: 2rem; margin: 0 0 1rem; }
+  h2 { font-size: 1.25rem; margin: 0 0 0.75rem; }
+  .swatch { display: inline-block; width: 80px; height: 80px; margin-right: 0.5rem; vertical-align: top; }
+  .swatch-label { font-size: 0.8rem; color: #666; display: block; margin-top: 4px; }
+  .terminal { background: #1e1e1e; color: #d4d4d4; font-family: "SF Mono", Consolas, monospace; padding: 1rem; border-radius: 4px; font-size: 0.9rem; line-height: 1.4; white-space: pre; }
+  .terminal .ok { color: #7ec699; }
+  .terminal .err { color: #f28b82; }
+  .terminal .warn { color: #f2c677; }
+  .terminal .dim { color: #666; }
+  pre.api { background: #f6f8fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+  .component-sample { border: 1px solid #eaeaea; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+  .docs-sample { max-width: 720px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<header>
+  <h1>{{PRODUCT_NAME}} — Design System Preview</h1>
+  <p>Generated {{DATE}} · Surfaces: {{DECLARED_SURFACES}}</p>
+</header>
+
+<!-- GUI block: include only if GUI surface declared -->
+<section id="gui">
+  <h2>Visual language — GUI</h2>
+  <h3>Palette</h3>
+  <div>
+    <!-- One .swatch per token; fill-in during generation -->
+    <span class="swatch" style="background:{{TOKEN_HEX}}"></span><span class="swatch-label">{{TOKEN_NAME}} · {{TOKEN_HEX}}</span>
+  </div>
+  <h3>Type specimens</h3>
+  <div>
+    <p style="font-family:{{DISPLAY_FONT}}; font-size:2rem;">Aa — Display 32 · {{DISPLAY_FONT}}</p>
+    <p style="font-family:{{BODY_FONT}}; font-size:1rem;">Aa — Body 16 · {{BODY_FONT}}. The quick brown fox jumps over the lazy dog.</p>
+  </div>
+  <h3>Component samples</h3>
+  <div class="component-sample">
+    <!-- Button, input, card samples live here; fill during generation -->
+  </div>
+</section>
+
+<!-- CLI block: include only if CLI surface declared -->
+<section id="cli">
+  <h2>Visual language — CLI</h2>
+  <h3>Terminal palette</h3>
+  <div class="terminal">$ {{PRODUCT_SLUG}} status
+<span class="ok">✓</span> ready
+<span class="warn">!</span> 2 pending tasks
+<span class="err">✗</span> last run failed <span class="dim">(2h ago)</span></div>
+  <h3>Output modes (human / json / llm)</h3>
+  <!-- Three <pre> blocks showing the same command's three output modes -->
+</section>
+
+<!-- API block: include only if API surface declared -->
+<section id="api">
+  <h2>Voice — API</h2>
+  <h3>Error envelope sample</h3>
+  <pre class="api">{
+  "error": {
+    "code": "invalid_argument",
+    "message": "{{ERROR_VOICE_SAMPLE}}",
+    "request_id": "req_..."
+  }
+}</pre>
+  <h3>Versioning voice sample</h3>
+  <!-- Release notes / deprecation notice tone sample -->
+</section>
+
+<!-- Docs block: include only if docs surface declared -->
+<section id="docs">
+  <h2>Voice — Docs</h2>
+  <div class="docs-sample">
+    <h1>{{DOC_H1_SAMPLE}}</h1>
+    <p>{{DOC_BODY_SAMPLE}}</p>
+    <blockquote><strong>Note</strong> — {{DOC_CALLOUT_SAMPLE}}</blockquote>
+    <pre><code>{{DOC_CODE_SAMPLE}}</code></pre>
+  </div>
+</section>
+
+<footer>
+  <p>Source: design/system.md · See decisions log for changes.</p>
+</footer>
+</body>
+</html>
