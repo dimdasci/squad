@@ -57,16 +57,16 @@ paths in the manifest.
 
 **Skills vs. activities (clarifier).** The role × activity matrix in
 `squad-process-model.md` counts activities, not skills. A single
-activity may be implemented by multiple skills — for example, the
-Designer's "maintain design system" activity is implemented by four
-skills (`design-system` as orchestrator plus three
-`design-research-*` helpers), and the Designer's separate "maintain
-product identity and naming" activity is implemented by one skill
-(`product-naming`). The 25% cap in the role matrix is a balance
-rule on activity ownership, not a hard limit on skill count. When
-introducing a new skill, first determine whether it implements an
-existing activity or proposes a new one — only new activities need
-to be added to the matrix explicitly.
+activity is typically implemented by a produce/validate pair — for
+example, the Designer's "maintain design system" activity is
+implemented by `design-system` + `design-system-review`, and the
+Designer's separate "maintain product identity and naming" activity
+is implemented by `product-naming` + `product-naming-review`. The
+25% cap in the role matrix is a balance rule on activity ownership,
+not a hard limit on skill count. When introducing a new skill, first
+determine whether it implements an existing activity or proposes a
+new one — only new activities need to be added to the matrix
+explicitly.
 
 ### Proven patterns (validated by product-brief test)
 
@@ -126,10 +126,7 @@ $product_home/
 │   └── data-models/             # Data Models
 ├── design/                      # Design System foundation (Designer)
 │   ├── system.md                # Design System Doc
-│   └── research/                # Reference layer (design research)
-│       ├── references.md        # Design Research — References
-│       ├── audience.md          # Design Research — Audience
-│       └── standards.md         # Design Research — Standards
+│   └── research/                # Ad-hoc design reference notes (self-regulated)
 ├── identity/                    # Product Identity foundation (Designer)
 │   └── naming.md                # Product Naming
 ├── qa/
@@ -166,9 +163,10 @@ After CPTO approves, invoke `squad:product-backlog`.
 Some skills are **entry points** that invoke other skills as
 dependencies before doing their own work. The `design-system` skill
 is the first instance: it reads its upstream dependencies (approved
-product brief, optional research briefs, optional product naming),
-invokes the missing sub-skills to create them if needed, then
-synthesizes the Design System Doc.
+product brief, product naming), invokes `product-naming` as a
+sub-skill if the brief has no name, runs its own inline research
+(WebFetch/WebSearch plus built-in knowledge), then synthesizes the
+Design System Doc.
 
 Orchestration is distinct from chaining:
 
@@ -313,28 +311,13 @@ extending foundations that already exist, and both outrank gates
 (which presuppose their foundations) and outer/continuous skills
 (which presuppose a working inner cycle).
 
-**Design-skills family.** The Design System foundation is produced
-by a two-skill pair (`design-system` + `design-system-review`)
-following the shipped produce/validate pattern. Research happens
-inline inside the produce skill (WebFetch/WebSearch plus built-in
-knowledge); there are no separate helper skills. This supersedes
-earlier notes that described a four-skill family with
-`design-research-*` helpers — those were removed per the
-2026-04-19 design spec Decision 4 (shipped-pair shape proves inline
-research works; coordination cost of separate helpers outweighed
-payoff for a solo operator).
-
-**Product Identity skills.** The Product Identity foundation is
-produced by a separate pair of skills — `product-naming` and
-`product-naming-review` — which are not part of the design-skills
-family. `design-system` invokes `product-naming` as a sub-skill
-when the brief has no name, crossing the foundation boundary (skill
-invocation is orthogonal to foundation membership). Both pairs are
-shipped.
-
-Bottom-up build order: Product Identity first (shipped), then the
-`design-system` produce/validate pair (shipped). No helper skills
-in this family.
+The Design System foundation is produced by
+`design-system` + `design-system-review`. Research happens inline
+inside the produce skill (WebFetch/WebSearch plus built-in
+knowledge). The Product Identity foundation is produced by
+`product-naming` + `product-naming-review`. `design-system` invokes
+`product-naming` as a sub-skill when the brief has no name —
+skill invocation crosses foundation boundaries.
 
 | Skill | Role | Foundation | Type | Priority |
 |-------|------|-----------|------|----------|

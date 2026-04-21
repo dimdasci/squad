@@ -415,16 +415,13 @@ digraph full_model {
 - What triggers durable artifact revisions outside of gate escalations?
 - How do multiple agents coordinate on shared artifacts concurrently?
 - What is the concrete cadence for continuous activities?
-- **Design Gate scope has broadened.** The Design System Doc now spans
-  seven content categories (principles, voice and tone, terminology,
-  information architecture, interaction patterns, visual language, and
-  surface conventions per declared product surface). The Design Gate
-  must route checks by category and by the surface(s) a given change
-  touches — GUI, CLI, API error voice, docs. This affects the eventual
-  `design-gate` skill design; the gate will be heavier than originally
-  anticipated when it was scoped as "validate against visual tokens."
-  See `squad-skills-architecture.md` for the design-family breakdown
-  and `squad-artifacts.md` for the expanded Design System Doc scope.
+- **Design Gate routing.** The Design System Doc spans seven content
+  categories (principles, voice and tone, terminology, information
+  architecture, interaction patterns, visual language, surface
+  conventions per declared surface). The Design Gate must route
+  checks by category and by the surface(s) a given change touches —
+  GUI, CLI, API error voice, docs. See `squad-skills-architecture.md`
+  and `squad-artifacts.md` for the Design System Doc scope.
 - **Reference-layer artifacts** (see `squad-artifacts.md`) feed
   decisions but are not gated. Does any gate need to check that its
   durable artifact cited its Reference inputs? Currently no — the

@@ -1,11 +1,11 @@
 # Squad Artifacts
 
-Status: draft v3
-Date: 2026-04-07
+Status: draft v4
+Date: 2026-04-21
 
 ## Overview
 
-18 named artifacts across 5 layers supporting the squad process model.
+15 named artifacts across 5 layers supporting the squad process model.
 The Durable layer hosts the four foundations (Product, Architecture,
 Design System, Product Identity) plus Test Scenarios as a QA support
 artifact. Artifacts align with Superpowers at the inner cycle
@@ -16,9 +16,11 @@ code review report).
 
 Our framework adds artifacts for the durable layer, outer cycle,
 continuous layer, and the Reference layer — everything Superpowers
-doesn't cover. The Reference layer is extensible: agents can produce
-additional ad-hoc reference artifacts as feature work surfaces new
-findings, without adding each one to the named inventory.
+doesn't cover. The Reference layer is **ad-hoc only by naming**:
+agents produce reference artifacts as feature work surfaces new
+findings (handoff memos, coordination notes, peer-product scans),
+without any pre-planned named inventory. The layer itself remains a
+first-class part of the model.
 
 ## Artifact Catalog
 
@@ -71,10 +73,18 @@ and/or CLI — mandatory whenever the product has any human-facing
 surface; omitted only for pure API or headless services), and surface
 conventions (per declared surface: CLI output and exit codes, GUI
 component rules, docs style, API error voice, etc.). The source of
-truth for the Design Gate. Produced by the `design-system` orchestrator
-skill, which invokes `product-naming` and the `design-research-*`
-helpers as dependencies before synthesizing. Lives at
-`${user_config.product_home}/design/system.md`.
+truth for the Design Gate. Produced by the shipped `design-system`
+produce/validate pair. Research (peer-product lookups, platform and
+domain standards, audience trace from the brief's JTBD) happens
+**inline** inside the produce skill via WebFetch/WebSearch plus
+built-in knowledge, with sources cited in the doc — there are no
+separate research helper skills. The produce skill invokes
+`product-naming` as a cross-foundation sub-skill when the brief has
+no name. Lives at `${user_config.product_home}/design/system.md`;
+companion HTML preview at `${user_config.product_home}/design/preview/<date>.html`.
+See `docs/superpowers/specs/2026-04-19-design-phase-skills-design.md`
+for the shipped design (Decision 4 explains why research is inline,
+not helper skills).
 
 **Product Naming** — the sole artifact of the **Product Identity**
 foundation. Contains the chosen product name plus its supporting
@@ -180,21 +190,23 @@ deprecated patterns). Each debt item gets severity and suggested ADR
 if it requires an architectural decision. Feeds back into Product
 Backlog as tech items.
 
-### Reference (3 named artifacts, plus ad-hoc)
+### Reference (ad-hoc only — no named artifacts)
 
-| Artifact | Produced by | Consumed by | Gate |
-|----------|------------|-------------|------|
-| Design Research — References | Designer | `design-system`, PO | — |
-| Design Research — Audience | Designer | `design-system`, PO | — |
-| Design Research — Standards | Designer | `design-system`, Architect | — |
+The Reference layer has no pre-planned named artifacts. It is an
+extensible bucket for **emergent** material: feature-work findings,
+handoff memos, coordination notes between agents, peer-product scans,
+standards checks that weren't worth promoting into a durable doc.
+Earlier drafts of this document named three `Design Research — *`
+briefs here; those were removed when the design-skills family was
+consolidated to a single produce/validate pair (research now happens
+inline inside `design-system` — see
+`docs/superpowers/specs/2026-04-19-design-phase-skills-design.md`
+Decision 4).
 
 **Reference** artifacts are persistent shared material that informs
-work without committing to any outcome. The layer covers both formal
-evidence (research briefs, audits, benchmarks, competitive analyses)
-and emergent working material (feature-work findings, handoffs,
-scratch notes, coordination memos between agents). Lifespans range
-from minutes (a single agent handoff) to months (a research brief
-reused across multiple design iterations).
+work without committing to any outcome. Lifespans range from minutes
+(a single agent handoff) to months (a peer-product scan reused
+across multiple iterations).
 
 Defining properties:
 - Persists on disk, reusable across sessions, branches, and agents
@@ -207,45 +219,21 @@ Defining properties:
   Health & Debt Register, Knowledge Log, or trigger updates to a
   durable foundation
 
-**Structure follows purpose.** Pre-planned Reference artifacts get
-fixed paths so downstream skills can read them reliably — the three
-design research briefs live at `${user_config.product_home}/design/research/*.md`.
-Emergent Reference artifacts are **self-regulated**: the producing
-agent picks a filename inside its role's directory without framework
-ceremony (e.g., `${user_config.product_home}/architecture/notes/<slug>.md`,
-`${user_config.product_home}/product/research/<slug>.md`). Classification is by
-property, not by location — Reference artifacts always live inside
-the producing role's directory, never in a centralized `references/`
-folder.
-
-**Design Research — References** — peer products in the product's
-space, category landscape, where the design plays safe with category
-conventions vs takes deliberate creative risks. Produced by Designer
-via the `design-research-references` skill; consumed by `design-system`
-as input to the aesthetic and interaction proposal.
-
-**Design Research — Audience** — target users (traced from the
-brief's JTBD statements), tools they already use, conventions they
-already know, accessibility needs applicable to their context.
-Produced by Designer via the `design-research-audience` skill;
-consumed by `design-system` and by `product-brief` revisions.
-
-**Design Research — Standards** — applicable WCAG level, platform
-human interface guidelines (Apple HIG, Material Design, etc. — only
-when the product runs on those platforms), industry regulations
-affecting UI patterns (e.g., HIPAA, GDPR consent flows), CLI norms
-(clig.dev, POSIX), and API error voice conventions. Produced by
-Designer via the `design-research-standards` skill; consumed by
-`design-system` and by `architecture-record` revisions.
+**Self-regulated structure.** The producing agent picks a filename
+inside its role's directory without framework ceremony (e.g.,
+`${user_config.product_home}/architecture/notes/<slug>.md`,
+`${user_config.product_home}/product/research/<slug>.md`).
+Classification is by property, not by location — Reference artifacts
+always live inside the producing role's directory, never in a
+centralized `references/` folder.
 
 Reference artifacts do **not** have fork-context review skills.
-Self-validation is sufficient: the producing skill checks its own
-output for source citation and coverage completeness. This is a
-pragmatic deviation from the produce/validate pattern that applies
-to Durable artifacts — Reference material is inputs to approved
-artifacts, not commitments in its own right, so the downstream
-durable approval (of the Design System Doc) implicitly covers the
-references it cites.
+Self-validation is sufficient: the producing skill or agent checks
+its own output for source citation and coverage completeness. This
+is a pragmatic deviation from the produce/validate pattern that
+applies to Durable artifacts — Reference material is inputs to
+approved artifacts, not commitments in its own right, so downstream
+durable approvals implicitly cover the references they cite.
 
 ## Superpowers Alignment
 
@@ -318,14 +306,12 @@ digraph artifacts {
     fontcolor="#f472b6"
     fontsize=11
 
-    // Durable foundation artifacts (solid border): Design System + Product Identity
+    // Durable foundation artifacts (solid border): Design System + Product Identity.
+    // Research for the Design System Doc happens inline inside the produce skill
+    // (WebFetch/WebSearch + built-in knowledge); no separate Reference-layer
+    // helper artifacts. See 2026-04-19 design-phase-skills spec, Decision 4.
     ds_system [label="Design System Doc" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0"]
     ds_naming [label="Product Naming" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0"]
-
-    // Reference-layer artifacts (dashed border = non-durable, optional inputs, self-validated)
-    ds_ref_references [label="Design Research\nReferences" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
-    ds_ref_audience [label="Design Research\nAudience" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
-    ds_ref_standards [label="Design Research\nStandards" fillcolor="#4a1942" color="#f472b6" fontcolor="#e2e8f0" style="dashed,filled"]
   }
 
   subgraph cluster_dev {
@@ -384,15 +370,11 @@ digraph artifacts {
   dv_code -> gate_design [color="#6ee7b7" penwidth=1.5]
 
   // ── DESIGNER INTERNAL DEPENDENCIES ──
-  // Product Naming feeds the Design System orchestrator and is referenced by the brief.
+  // Product Naming feeds the Design System produce skill (invoked as sub-skill
+  // when the brief has no name) and is referenced by the brief.
   // No cycle gate for naming — QA Gate covers drift via terminology checks.
-  ds_naming -> ds_system [color="#f472b6" penwidth=1.5 label="name"]
+  ds_naming -> ds_system [color="#f472b6" penwidth=1.5 label="name\n(sub-skill)"]
   ds_naming -> po_brief [color="#f472b6" penwidth=1.5 style=dashed label="referenced"]
-
-  // Reference-layer artifacts are optional inputs to the Design System orchestrator.
-  ds_ref_references -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
-  ds_ref_audience -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
-  ds_ref_standards -> ds_system [color="#f472b6" penwidth=1.5 style=dashed label="optional"]
 
   qa_scenarios -> gate_qa [color="#60a5fa" penwidth=1.5]
   dv_code -> gate_qa [color="#6ee7b7" penwidth=1.5]
@@ -427,8 +409,3 @@ digraph artifacts {
 - How does the Reference layer get pruned? Emergent reference artifacts
   accumulate; some go stale. Need a staleness heuristic (file age,
   referenced files still existing, explicit expiry in frontmatter).
-- When a pre-planned Reference artifact is missing, should the
-  orchestrator that depends on it fall through with built-in knowledge
-  or block until the reference is produced? Current answer: fall
-  through, degrade gracefully — Reference artifacts are optional
-  inputs, not required prerequisites.

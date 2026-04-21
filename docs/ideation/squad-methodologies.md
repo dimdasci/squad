@@ -104,12 +104,24 @@ skill, pick the leanest technique that fits. Layer more later.
 
 ### Design System Doc
 
-- **Primary:** Design tokens (~20 named values) + pattern catalog
-  (component compositions as what-to-use-when rules)
-- **Supporting:** Gstack DESIGN.md template (Product Context, Aesthetic
-  Direction, Typography, Color, Spacing, Layout, Motion, Decisions Log);
-  SAFE/RISK proposal pattern
-- **Source:** Gstack design-consultation (MIT), Brad Frost Atomic Design
+- **Primary:** Consultant-posture synthesis into a 7-category
+  adaptive doc (principles, voice and tone, terminology, information
+  architecture, interaction patterns, visual language, surface
+  conventions), scoped to the surfaces declared in the
+  Architecture Record. SAFE/RISK framing on visual language and
+  voice/tone; plain one-line rationale on every other decision.
+  Inline research via WebFetch/WebSearch plus built-in knowledge
+  (peer-product lookups, platform/CLI/API/docs standards,
+  JTBD-traced audience) cited in the doc — no separate research
+  helper skills. Companion HTML preview generated from a single
+  adaptive template with conditional sections per surface.
+- **Supporting:** Gstack DESIGN.md as structural template for the
+  visual-language section; Decisions Log row per update or fresh
+  start; anti-slop catalog single-sourced at the validator.
+- **Source:** `design-system` (shipped, MIT). Structural template
+  borrowed from Gstack design-consultation (MIT). Tokens live in
+  code; the Design System Doc is the cross-surface standard, not a
+  token file.
 
 ### Design Gate
 
