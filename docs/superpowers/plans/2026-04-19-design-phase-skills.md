@@ -1206,3 +1206,17 @@ Before handing off, check:
 - Sub-skill Report statuses: exact `DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED` match squad-skills-architecture.md
 
 **Checklist-item ↔ phase mapping:** 13 checklist items → 7 phases per spec §6. The checklist is finer-grained than phases (each phase has 1-2 checklist items). This is consistent with how architecture-record lists 13 checklist items across its two phases.
+
+---
+
+## Manual execution test result
+
+- **Date:** 2026-04-21
+- **Outcome:** success
+- **Target:** skill-playground (Audenza — declared surfaces: GUI)
+- **Artifacts:**
+  - `docs/design/system.md` — `Status: approved`, 7 categories, Decisions Log with `initial` row
+  - `docs/design/preview/2026-04-21.html` — GUI block rendered; CLI / API / docs correctly omitted
+  - `docs/design/reviews/2026-04-21.md` — `PASS_WITH_NOTES`, design quality A, slop grade clean
+- **Skill edits required:** none
+- **Branch:** `feat/design-system` merged to `main` (merge commit `a6b0ae7`), pushed to `origin/main`.

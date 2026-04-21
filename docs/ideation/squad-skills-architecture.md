@@ -296,8 +296,8 @@ the fan-out variant.
 | `architecture-record-review` | QA/Reviewer | Validate (fork) | 123 | Pending |
 | `product-naming` | Designer | Produce | 521 | Yes — manual execution test |
 | `product-naming-review` | Designer / QA | Validate (fork) | 200 | Yes — manual execution test |
-| `design-system` | Designer | Produce | 360 | Pending (manual execution test) |
-| `design-system-review` | Designer / QA | Validate (fork) | 194 | Pending (manual execution test) |
+| `design-system` | Designer | Produce | 360 | Yes — manual execution test |
+| `design-system-review` | Designer / QA | Validate (fork) | 194 | Yes — manual execution test |
 
 ### Planned
 
